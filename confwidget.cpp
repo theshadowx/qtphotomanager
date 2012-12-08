@@ -25,29 +25,49 @@ ConfWidget::ConfWidget(QWidget *parent) :
     brightnessSlider->setSliderPosition(1);
 
     QObject::connect(cancelButton, SIGNAL(clicked()), this, SLOT(on_cancelButton_clicked()));
+    QObject::connect(saveButton, SIGNAL(clicked()), this, SLOT(on_saveButton_clicked()));
     QObject::connect(brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(brightnessValue()));
     QObject::connect(contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(contrastValue()));
+
 }
 
 void ConfWidget::on_cancelButton_clicked()
 {
-    qreal scaleFactor = view->transform().m11();
-
     brightnessSlider->setValue(1);
 
+    qreal scaleFactor = view->transform().m11();
     view->sceneProcessing->cellItemSelected->image->setPixmap(pixOriginal);
-
     view->scale(1/scaleFactor,1/scaleFactor);
     view->sceneProcessing->removeItem(view->scene->cellItemSelected->image);
     view->scene->addItem(view->scene->cellItemSelected);
     view->scene->cellItemSelected->image->setParentItem(view->scene->cellItemSelected);
     view->setScene(view->scene);
-    view->resize(view->parentWidget()->frameSize());
+    view->resize(view->parentWidget()->frameSize().width()*3/4,view->parentWidget()->frameSize().height());
     view->scene->setSceneRect(view->geometry());
     view->adjustCellItems();
 
+    emit cancelButton_clicked();
     this->hide();
 }
+
+void ConfWidget::on_saveButton_clicked()
+{
+    brightnessSlider->setValue(1);
+
+    qreal scaleFactor = view->transform().m11();
+    view->scale(1/scaleFactor,1/scaleFactor);
+    view->sceneProcessing->removeItem(view->scene->cellItemSelected->image);
+    view->scene->addItem(view->scene->cellItemSelected);
+    view->scene->cellItemSelected->image->setParentItem(view->scene->cellItemSelected);
+    view->setScene(view->scene);
+    view->resize(view->parentWidget()->frameSize().width()*3/4,view->parentWidget()->frameSize().height());
+    view->scene->setSceneRect(view->geometry());
+    view->adjustCellItems();
+
+    emit saveButton_clicked();
+    this->hide();
+}
+
 
 void ConfWidget::resizeEvent(QResizeEvent*)
 {

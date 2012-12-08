@@ -41,7 +41,5 @@ void CellItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
 
 void CellItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //QGraphicsItem::mousePressEvent(event);
-    qDebug()<<"cell clicked";
-    //image->setScale(10);
+    event->ignore();
 }

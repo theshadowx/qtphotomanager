@@ -19,7 +19,8 @@ public:
 
     graphicsScene *scene;
     graphicsScene *sceneProcessing;
-    ConfWidget *confWidget;
+
+public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event);

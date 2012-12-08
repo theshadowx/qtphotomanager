@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QtGui>
 #include <QtCore>
+#include "sortwidget.h"
 
 #ifdef Q_OS_LINUX
 #include "thirdparty/opencv/include/opencv2/core/core.hpp"
@@ -22,11 +23,12 @@ public:
     explicit ConfWidget(QWidget *parent = 0);
     void resizeEvent(QResizeEvent *);
 
-    graphicsView *view;
-
     QPixmap pixOriginal;
+    QPixmap pixProcessed;
     QImage imgOriginal;
     QImage imgProcessed;
+
+    graphicsView *view;
 
 #ifdef Q_OS_LINUX
     cv::Mat matOriginal;
@@ -42,9 +44,12 @@ private:
     QLabel *contrastLabel;
 
 signals:
-    
+    void cancelButton_clicked();
+    void saveButton_clicked();
+
 public slots:
     void on_cancelButton_clicked();
+    void on_saveButton_clicked();
     void brightnessValue();
     void contrastValue();
 

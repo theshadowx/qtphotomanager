@@ -6,7 +6,8 @@ SOURCES += \
     cellitem.cpp \
     imageitem.cpp \
     confwidget.cpp \
-    database.cpp
+    database.cpp \
+    sortwidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -15,7 +16,8 @@ HEADERS += \
     cellitem.h \
     imageitem.h \
     confwidget.h \
-    database.h
+    database.h \
+    sortwidget.h
 
 QT += sql
 

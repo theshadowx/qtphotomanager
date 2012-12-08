@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
         return 1;
 */
     MainWindow w("users","images");
+    w.setWindowTitle("PhotoManager (beta)");
     w.show();
 
     return a.exec();
