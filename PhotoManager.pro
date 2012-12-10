@@ -7,7 +7,9 @@ SOURCES += \
     imageitem.cpp \
     confwidget.cpp \
     database.cpp \
-    sortwidget.cpp
+    sortwidget.cpp \
+    users.cpp \
+    userschain.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -17,7 +19,9 @@ HEADERS += \
     imageitem.h \
     confwidget.h \
     database.h \
-    sortwidget.h
+    sortwidget.h \
+    users.h \
+    userschain.h
 
 QT += sql
 

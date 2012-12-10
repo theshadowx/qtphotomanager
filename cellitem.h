@@ -25,6 +25,10 @@ protected:
 
 
 private:
+
+    CellItem *nextCellItem;
+    CellItem *previousCellItem;
+
     QString imageName;
     QString imagePath;
     QString imageSource;

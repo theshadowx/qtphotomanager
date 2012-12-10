@@ -8,6 +8,7 @@
 #include "database.h"
 #include "confwidget.h"
 #include "sortwidget.h"
+#include "userschain.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(const QString &usersTable, const QString &imagesTable,QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent=0);
     ~MainWindow();
 
 private slots:
@@ -31,11 +32,6 @@ private slots:
 
 
 private:
-
-
-    QDir            dirPath;
-    QSqlDatabase    db;
-    QSqlQuery*      query;
 
     QMenu          *fileMenu;
     QMenu          *editMenu;
@@ -56,8 +52,9 @@ private:
 
 
     Ui::MainWindow *ui;
-    QSqlTableModel *userTable;
-    QSqlTableModel *imageTable;
+    Users *currentUser;
+    UsersChain *userChain;
+
 
     void onCellItemclicked(CellItem *item);
 

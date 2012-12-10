@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     if (!createConnection())
         return 1;
 */
-    MainWindow w("users","images");
+    MainWindow w;
     w.setWindowTitle("PhotoManager (beta)");
     w.show();
 

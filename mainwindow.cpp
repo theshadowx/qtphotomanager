@@ -3,53 +3,17 @@
 #include "ui_mainwindow.h"
 
 
-MainWindow::MainWindow(const QString &usersTable, const QString &imagesTable, QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    /***************** Base de Données *******************/
 
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(":memory:");
-    db.open();
+    Users* adminUser = new Users("admin","root",Users::LEVEL_1,0);
+    userChain = new UsersChain();
+    userChain->addUser(adminUser);
+    currentUser = 0;
 
-    query = new QSqlQuery(db);
-
-    // create users table
-    query->exec("create table users (id int primary key, "
-               "username varchar(20), password varchar(20),permission int)");
-
-    query->exec("insert into users values(1, 'admin', 'root', 1)");
-
-    // create image table
-    query->exec("create table images (id int primary key,"
-               "imagefile int,"
-               "filename varchar(20),"
-               "filepath varchar(20),"
-               "resolution varchar(20),"
-               "price int,"
-                "size int,"
-                "levelConf varchar(1))");
-
-    query->exec("insert into images values(1,1,'image_1','images/image_1.jpg','1440x900','500','252','F')");
-    query->exec("insert into images values(2,2,'image_2','images/image_2.jpg','1440x900','600','266','F')");
-    query->exec("insert into images values(3,3,'image_3','images/image_3.jpg','1920x1080','700','359','F')");
-    query->exec("insert into images values(4,4,'image_4','images/image_4.jpg','1600x1200','800','217','F')");
-    query->exec("insert into images values(5,5,'image_5','images/image_5.jpg','1440x900','900','142','F')");
-    query->exec("insert into images values(6,6,'image_6','images/image_6.jpg','1280x1024','1000','538','F')");
-    query->exec("insert into images values(7,7,'image_7','images/image_7.jpg','1440x900','1100','87','F')");
-
-    userTable = new QSqlTableModel(this);
-    userTable->setTable(usersTable);
-    userTable->setEditStrategy(QSqlTableModel::OnManualSubmit);!
-    userTable->select();
-
-    imageTable = new QSqlTableModel(this);
-    imageTable->setTable(imagesTable);
-    imageTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    imageTable->select();
-
-   /***************** init interface *******************/
+    /***************** init interface *******************/
 
     ui->setupUi(this);
 
@@ -89,14 +53,14 @@ MainWindow::MainWindow(const QString &usersTable, const QString &imagesTable, QW
 
     confWidget = new ConfWidget(ui->centralWidget);
     confWidget->setGeometry(1250*3/4,0,1250*1/4,750);
-    //confWidget->sortWidget = sortWidget;
+    confWidget->view = view;
     confWidget->hide();
 
-
+/*
     dirPath = QDir(QDir::homePath() + "/.photoManager");
     if(!dirPath.exists())
         QDir().mkdir(dirPath.path());
-
+*/
     this->setMenuBar(menuBar);
 
 
@@ -121,66 +85,46 @@ void MainWindow::on_pushButton_clicked()
     QString username = ui->userNameEdit->text();
     QString password = ui->passwordEdit->text();
 
-    int userCount = userTable->rowCount();
-    int imageCount = imageTable->rowCount();
-
-    int imageOffsetHeight = 150;
-    int imageOffsetWidth = 170;
-    int leftMargin = 70;
-    int topMargin = 40;
-    int bottomMargin = 40;
-    int columnCount =(int) (view->frameSize().width()-leftMargin)/(imageOffsetWidth+leftMargin)+1;
-
-    // verifier si le nom d'utilisateur et le mots de passe existent dèja dans la base de donnée
-    // si oui, cacher le widget de connection et afficher view
-    for (int i = 0; i < userCount; i++) {
-        QSqlRecord recordUsers = userTable->record(i);
-        if(username == recordUsers.value("username").toString() && password == recordUsers.value("password").toString()){
-            ui->connectionWidget->hide();
-            view->show();
-            break;
-        }
-    }
-
-    // si view n'est plus caché (nom d'utilisateur et mot de passe sont correctes )
-    // Affichage des images
-    // ajout des images dans une liste
-    if(!view->isHidden()){
-        confWidget->view = view;
-        for (int i = 0; i < imageCount; i++) {
-            CellItem *cell;
-            QSqlRecord recordImage = imageTable->record(i);
-            int id = recordImage.value("id").toInt();
-            QString fileName = recordImage.value("filename").toString();
-            QString filePath = recordImage.value("filepath").toString();
-            int price = recordImage.value("price").toInt();
-
-            int columnOffset = (37 * (i%columnCount));
-            int x = ((i % columnCount) * imageOffsetWidth) + leftMargin + columnOffset;
-            int y = ((i / columnCount) * (imageOffsetHeight + bottomMargin))+ topMargin;
-
-            cell = new CellItem(id,fileName,filePath,price,QPixmap(":/" + filePath),0);
-            cell->image->setData(0, i);
-            cell->setPos(view->mapToScene(x, y));
-            view->scene->addItem(cell);
-            view->scene->cellItemList.append(cell);
-        }
+    currentUser = userChain->getUser(username,password);
+    if(currentUser){
+        ui->connectionWidget->hide();
+        view->show();
         sortWidget->show();
+    }else{
+
     }
+
 }
 
 // submit click
 void MainWindow::on_submitBut_clicked(){
-
     QString username = ui->usrCnEdit->text();
     QString password = ui->pwCnEdit->text();
-    QString passwordcnf = ui->pwCfCnEdit->text();
+    QString passwordconf = ui->pwCfCnEdit->text();
 
-    if(password != passwordcnf){
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Ok);
+
+    if(password != passwordconf){
+        msgBox.setText("The passwords are not the same, please retry.");
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+        return;
+    }else if(userChain->containsUser(username)){
+        msgBox.setText("This username is not available, please retry.");
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
         return;
     }else{
-        QString strSQL("insert into users values(2,'"+ username + "','"+ password +"', 1)");
-        query->exec(strSQL);
+        Users *user = new Users(username,password,Users::LEVEL_2);
+        userChain->addUser(user);
+        currentUser = user;
+        view->show();
+        sortWidget->show();
+        ui->connectionWidget->hide();
+        msgBox.setText("User added");
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.exec();
     }
 }
 
