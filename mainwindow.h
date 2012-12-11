@@ -9,6 +9,7 @@
 #include "confwidget.h"
 #include "sortwidget.h"
 #include "userschain.h"
+#include "imagecellchain.h"
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,7 @@ private:
     Ui::MainWindow *ui;
     Users *currentUser;
     UsersChain *userChain;
+    ImageCellChain * imageCellChain;
 
 
     void onCellItemclicked(CellItem *item);

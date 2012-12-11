@@ -7,22 +7,33 @@ CellItem::CellItem(int id, const QString fileName, const QString filePath, const
     imageName = fileName;
     imagePath = filePath;
     imagePrice = price;
-    image = new ImageItem(id,pixmap,this);
+    image = new ImageItem(pixmap,this);
+    this->id = id;
 }
 
-QString CellItem::getImagePath()
+void CellItem::setId(int id)
+{
+    this->id = id;
+}
+
+QString CellItem::getImagePath() const
 {
     return imagePath;
 }
 
-QString CellItem::getImageName()
+QString CellItem::getImageName() const
 {
     return imageName;
 }
 
-int CellItem::getImagePrice()
+int CellItem::getImagePrice() const
 {
     return imagePrice;
+}
+
+int CellItem::getId() const
+{
+    return this->id;
 }
 
 QRectF CellItem::boundingRect() const

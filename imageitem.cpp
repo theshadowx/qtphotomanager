@@ -1,6 +1,6 @@
 #include "imageitem.h"
 
-ImageItem::ImageItem(int id, const QPixmap &pixmap, QGraphicsItem *parent)
+ImageItem::ImageItem(const QPixmap &pixmap, QGraphicsItem *parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
     adjust();

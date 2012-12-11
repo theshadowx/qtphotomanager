@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    imageCellChain = new ImageCellChain();
 
     Users* adminUser = new Users("admin","root",Users::LEVEL_1,0);
     userChain = new UsersChain();
@@ -40,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     this->setCentralWidget(ui->centralWidget);
     view = new graphicsView(ui->centralWidget);
+    view->scene->imageCellChain = imageCellChain;
     view->setGeometry(0,0,1250*3/4,750);
     view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -137,7 +139,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             if(mouseEvent->button() == Qt::LeftButton){
                 CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(mouseEvent->pos())));
                 if(item!=NULL){
-                    if(view->scene->cellItemList.contains(item)){
+                    if(view->scene->imageCellChain->contains(item)){
                         onCellItemclicked(item);
                     }else{
                         CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
@@ -163,31 +165,60 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction insertImageAction("inserer une image",&optionMenu);
 
     if(view->QGraphicsView::scene()==view->scene){
-       if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
+        if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
             optionMenu.addAction(&processImageAction);
             optionMenu.addAction(&deleteImageAction);
             optionMenu.addAction(&insertImageAction);
-       }else{
+        }else{
             optionMenu.addAction(&insertImageAction);
-       }
+        }
 
-        QAction* selectedItem = optionMenu.exec(globalPos);
-        if(selectedItem == &processImageAction){
+        QAction* selectedOption = optionMenu.exec(globalPos);
+
+        if(selectedOption == &processImageAction){
             CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
             if(item!=NULL){
-                if(view->scene->cellItemList.contains(item)){
+                if(view->scene->imageCellChain->contains(item)){
                     onCellItemclicked(item);
                 }else{
                     CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
                     onCellItemclicked(itemParent);
                 }
             }
-        }else if(selectedItem == &processImageAction){
-
-        }else if(selectedItem == &processImageAction){
+        }else if(selectedOption == &deleteImageAction){
+            CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+            if(item!=NULL){
+                if(view->scene->imageCellChain->contains(item)){
+                    view->scene->imageCellChain->deleteCellItem(item);
+                }else{
+                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                    view->scene->imageCellChain->deleteCellItem(itemParent);
+                }
+                view->adjustCellItems();
+            }
+        }else if(selectedOption == &insertImageAction){
+            QStringList fileNames;
+            QFileDialog dialog(this);
+            dialog.setFileMode(QFileDialog::ExistingFiles);
+            QFileInfo fileInfo;
+            dialog.setNameFilter("Images (*.png *.bmp *.jpg)");
+            if (dialog.exec()){
+                fileNames = dialog.selectedFiles();
+                for(int i=0; i<fileNames.count();i++){
+                    fileInfo.setFile(fileNames.at(i));
+                    CellItem *cellItem = new CellItem(i,
+                                                      fileInfo.baseName(),
+                                                      fileInfo.absolutePath(),
+                                                      500,
+                                                      QPixmap(fileInfo.absoluteFilePath()));
+                    imageCellChain->addCellItem(cellItem);
+                    view->scene->addItem(cellItem);
+                    view->adjustCellItems();
+                }
+            }
 
         }
-    }
+}
 }
 
 void MainWindow::onCellItemclicked(CellItem *item)

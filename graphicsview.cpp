@@ -31,7 +31,7 @@ void graphicsView::mousePressEvent(QMouseEvent* event)
 
 void graphicsView::adjustCellItems()
 {
-    int itemsCount = scene->cellItemList.count();
+    int itemsCount = scene->imageCellChain->getCount();
 
     int imageOffsetHeight = 150;
     int imageOffsetWidth = 170;
@@ -45,6 +45,6 @@ void graphicsView::adjustCellItems()
         int x = ((i % columnCount) * imageOffsetWidth) + leftMargin + columnOffset;
         int y = ((i / columnCount) * (imageOffsetHeight + bottomMargin)) + topMargin;
 
-        scene->cellItemList.at(i)->setPos(this->mapToScene(x, y));
+        scene->imageCellChain->cellItemAt(i)->setPos(this->mapToScene(x, y));
     }
 }

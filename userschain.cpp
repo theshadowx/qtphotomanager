@@ -13,7 +13,6 @@ void UsersChain::addUser(Users *user)
         userRoot = user;
         userLast = user;
         usersCount = 1;
-        return;
     }else{
         userLast->nextUser = user;
         user->previousUser=userLast;

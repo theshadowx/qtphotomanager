@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include <QGraphicsScene>
-#include "cellitem.h"
+#include "imagecellchain.h"
 
 
 class graphicsScene : public QGraphicsScene
@@ -12,6 +12,7 @@ class graphicsScene : public QGraphicsScene
 
 public:
     graphicsScene(QObject *parent);
+    ImageCellChain *imageCellChain;
     QList<CellItem *> cellItemList;
     CellItem *cellItemSelected;
 
