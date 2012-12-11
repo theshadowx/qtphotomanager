@@ -28,6 +28,7 @@ private slots:
     void on_submitBut_clicked();
     void showContextMenu(const QPoint &pos);
 
+    void logOut();
     void about();
     void aboutQt();
 
@@ -38,6 +39,7 @@ private:
     QMenu          *editMenu;
     QMenu          *helpMenu;
     QActionGroup   *alignmentGroup;
+    QAction        *logoutAct;
     QAction        *quitAct;
     QAction        *aboutAct;
     QAction        *aboutQtAct;
@@ -51,7 +53,7 @@ private:
     graphicsView   *view;
 
 
-
+    QDir homePath;
     Ui::MainWindow *ui;
     Users *currentUser;
     UsersChain *userChain;

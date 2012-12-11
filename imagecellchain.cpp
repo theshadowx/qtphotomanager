@@ -65,7 +65,7 @@ void ImageCellChain::deleteCellItem(CellItem *cellItem)
     }else if(cellItem == cellItemLast){
         cellItemLast = cellItem->previousCellItem;
         cellItemLast->nextCellItem = 0;
-        cellItemTmp = cellItemLast;
+        cellItemTmp = cellItemLast->nextCellItem;
     }else{
         cellItem->previousCellItem->nextCellItem = cellItem->nextCellItem;
         cellItem->nextCellItem->previousCellItem = cellItem->previousCellItem;

@@ -16,6 +16,11 @@ void CellItem::setId(int id)
     this->id = id;
 }
 
+void CellItem::setImageType(QString imageType)
+{
+    this->imageType = imageType;
+}
+
 QString CellItem::getImagePath() const
 {
     return imagePath;
@@ -24,6 +29,11 @@ QString CellItem::getImagePath() const
 QString CellItem::getImageName() const
 {
     return imageName;
+}
+
+QString CellItem::getImageType() const
+{
+    return imageType;
 }
 
 int CellItem::getImagePrice() const

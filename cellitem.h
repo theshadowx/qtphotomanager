@@ -12,8 +12,10 @@ class CellItem:  public QGraphicsItem
 public:
     CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap, QGraphicsItem *parent = 0);
     void setId(int id);
+    void setImageType(QString imageType);
     QString getImagePath() const;
     QString getImageName() const;
+    QString getImageType() const;
     int getImagePrice() const;
     int getId() const;
 
@@ -33,6 +35,7 @@ private:
     QString imageName;
     QString imagePath;
     QString imageSource;
+    QString imageType;
     int imagePrice;
     int id;
 };

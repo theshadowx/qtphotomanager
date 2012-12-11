@@ -13,7 +13,6 @@ class graphicsScene : public QGraphicsScene
 public:
     graphicsScene(QObject *parent);
     ImageCellChain *imageCellChain;
-    QList<CellItem *> cellItemList;
     CellItem *cellItemSelected;
 
 protected:

@@ -13,7 +13,6 @@ class graphicsView : public QGraphicsView
 public:
 
     graphicsView(QWidget *parent=0);
-    graphicsView(const QString &table, const QString &images, QWidget *parent=0);
 
     void adjustCellItems();
 

@@ -20,16 +20,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     menuBar     = new QMenuBar(this);
     quitAct     = new QAction(tr("&Quit"), this);
+    logoutAct   = new QAction(tr("&Log Out"),this);
     aboutAct    = new QAction(tr("A&bout"), this);
     aboutQtAct  = new QAction(tr("Abo&ut Qt"), this);
 
     aboutAct->setShortcut(tr("Ctrl+B"));
     aboutQtAct->setShortcut(tr("Ctrl+U"));
     quitAct->setShortcut(tr("Ctrl+Q"));
+    logoutAct->setShortcut(tr("Ctrl+L"));
 
 
     fileMenu = menuBar->addMenu(tr("&File"));
+    fileMenu->addAction(logoutAct);
     fileMenu->addAction(quitAct);
+
 
     editMenu = menuBar->addMenu(tr("&Edit"));
 
@@ -39,14 +43,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ui->centralWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    this->setCentralWidget(ui->centralWidget);
+
     view = new graphicsView(ui->centralWidget);
     view->scene->imageCellChain = imageCellChain;
     view->setGeometry(0,0,1250*3/4,750);
     view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->installEventFilter(this);
+    view->sceneProcessing->installEventFilter(this);
     view->hide();
 
     sortWidget = new SortWidget(ui->centralWidget);
@@ -58,11 +61,11 @@ MainWindow::MainWindow(QWidget *parent) :
     confWidget->view = view;
     confWidget->hide();
 
-/*
-    dirPath = QDir(QDir::homePath() + "/.photoManager");
-    if(!dirPath.exists())
-        QDir().mkdir(dirPath.path());
-*/
+
+    homePath = QDir(QDir::homePath() + "/.photoManager");
+    if(!homePath.exists())
+        QDir().mkdir(homePath.path());
+
     this->setMenuBar(menuBar);
 
 
@@ -71,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
     QObject::connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
+    QObject::connect(logoutAct, SIGNAL(triggered()), this, SLOT(logOut()));
     QObject::connect(confWidget, SIGNAL(cancelButton_clicked()), sortWidget, SLOT(show()));
     QObject::connect(confWidget, SIGNAL(saveButton_clicked()), sortWidget, SLOT(show()));
     QObject::connect(view, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
@@ -87,13 +91,20 @@ void MainWindow::on_pushButton_clicked()
     QString username = ui->userNameEdit->text();
     QString password = ui->passwordEdit->text();
 
+    ui->userNameEdit->setText("");
+    ui->passwordEdit->setText("");
+
     currentUser = userChain->getUser(username,password);
     if(currentUser){
         ui->connectionWidget->hide();
         view->show();
         sortWidget->show();
     }else{
-
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setText("Username or Password is wrong, please retry.");
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
     }
 
 }
@@ -154,15 +165,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::showContextMenu(const QPoint &pos)
 {
-    // for most widgets
     QPoint globalPos = view->mapToGlobal(pos);
-    // for QAbstractScrollArea and derived classes you would use:
-    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos);
 
     QMenu optionMenu(this);
-    QAction processImageAction("Traiter l'image",&optionMenu);
-    QAction deleteImageAction("supprimer l'image",&optionMenu);
-    QAction insertImageAction("inserer une image",&optionMenu);
+    QAction processImageAction("Process this image",&optionMenu);
+    QAction deleteImageAction("Delete this image",&optionMenu);
+    QAction insertImageAction("insert an image",&optionMenu);
 
     if(view->QGraphicsView::scene()==view->scene){
         if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
@@ -211,14 +219,27 @@ void MainWindow::showContextMenu(const QPoint &pos)
                                                       fileInfo.absolutePath(),
                                                       500,
                                                       QPixmap(fileInfo.absoluteFilePath()));
+                    cellItem->setImageType(fileInfo.completeSuffix());
                     imageCellChain->addCellItem(cellItem);
                     view->scene->addItem(cellItem);
-                    view->adjustCellItems();
                 }
+            view->adjustCellItems();
             }
 
         }
+    }
 }
+
+void MainWindow::logOut()
+{
+    currentUser = 0;
+    view->hide();
+    confWidget->hide();
+    sortWidget->hide();
+    ui->connectionWidget->show();
+    for(int i=imageCellChain->getCount()-1;i>=0;i--){
+        imageCellChain->deleteCellItemAt(i);
+    }
 }
 
 void MainWindow::onCellItemclicked(CellItem *item)
@@ -236,12 +257,14 @@ void MainWindow::onCellItemclicked(CellItem *item)
     confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
     confWidget->show();
     #ifdef Q_OS_LINUX
-        QString strPath = QDir().currentPath() + "/../../PhotoManager/" + item->getImagePath();
+    QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
         confWidget->matOriginal = cv::imread(strPath.toStdString());
         confWidget->matProcessed = cv::imread(strPath.toStdString());
     #endif
     confWidget->pixOriginal = item->image->pixmap();
     view->fitInView(view->scene->cellItemSelected->image,Qt::KeepAspectRatio);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 }
 

@@ -43,7 +43,10 @@ void ConfWidget::on_cancelButton_clicked()
     view->scene->cellItemSelected->image->setParentItem(view->scene->cellItemSelected);
     view->setScene(view->scene);
     view->resize(view->parentWidget()->frameSize().width()*3/4,view->parentWidget()->frameSize().height());
-    view->scene->setSceneRect(view->geometry());
+
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
     view->adjustCellItems();
 
     emit cancelButton_clicked();
