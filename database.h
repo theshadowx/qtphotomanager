@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include "users.h"
 
 
 class DataBase : public QSqlDatabase
@@ -13,6 +14,16 @@ class DataBase : public QSqlDatabase
 public:
     DataBase();
     virtual ~DataBase();
+
+    void addUserDb(Users *user);
+    Users* getUserDb(int id);
+    int getNumlines() const;
+    bool deleteUserDb(QString username);
+
+private:
+    QFile userDbFile;
+    QDir homePath;
+    int numLines;
 
 };
 

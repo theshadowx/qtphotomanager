@@ -1,10 +1,6 @@
 #ifndef CELLITEM_H
 #define CELLITEM_H
 
-#include <QGraphicsItem>
-#include <QtGui>
-#include <QtCore>
-
 #include "imageitem.h"
 
 class CellItem:  public QGraphicsItem

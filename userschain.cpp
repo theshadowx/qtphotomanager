@@ -49,18 +49,37 @@ bool UsersChain::addUserAt(Users *user,int id)
 
 void UsersChain::deleteUser(Users *user)
 {
+
     Users *userTmp = user;
 
-    user->previousUser->nextUser = user->nextUser;
-    user->nextUser->previousUser = user->previousUser;
+    if(user == userRoot){
+        if(usersCount == 1){
+            userRoot = 0;
+            userLast = 0;
+            userTmp = 0;
+        }else{
+            userRoot = user->nextUser;
+            userRoot->previousUser = 0;
+            userTmp = userRoot;
+        }
+    }else if(user == userLast){
+        userLast = user->previousUser;
+        userLast->nextUser = 0;
+        userTmp = userLast->nextUser;
+    }else{
+        user->previousUser->nextUser = user->nextUser;
+        user->nextUser->previousUser = user->previousUser;
+        userTmp = user->nextUser;
+    }
 
     while(userTmp){
-        userTmp->nextUser->setId(userTmp->nextUser->getId()-1);
+        userTmp->setId(userTmp->getId()-1);
         userTmp = userTmp->nextUser;
     }
 
     usersCount--;
     delete user;
+
 }
 
 void UsersChain::deleteUserAt(int id)

@@ -53,12 +53,11 @@ private:
     graphicsView   *view;
 
 
-    QDir homePath;
     Ui::MainWindow *ui;
     Users *currentUser;
     UsersChain *userChain;
     ImageCellChain * imageCellChain;
-
+    DataBase *database;
 
     void onCellItemclicked(CellItem *item);
 

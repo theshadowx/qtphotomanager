@@ -1,14 +1,13 @@
 #ifndef USERS_H
 #define USERS_H
 
-#include <QWidget>
+#include <QObject>
 #include <QtGui>
 #include <QtCore>
 
 class Users
 {
 public:
-
     enum USER_PERMISSION{LEVEL_1 = 1,LEVEL_2 = 2,LEVEL_3 = 3};
 
     Users();

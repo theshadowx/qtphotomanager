@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "cellitem.h"
 #include "ui_mainwindow.h"
 
 
@@ -7,12 +6,24 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    imageCellChain = new ImageCellChain();
-
-    Users* adminUser = new Users("admin","root",Users::LEVEL_1,0);
+    /*********** init dataBase/UsersChain *******************/
     userChain = new UsersChain();
-    userChain->addUser(adminUser);
+    imageCellChain = new ImageCellChain();
+    database = new DataBase();
+    Users *user = 0;
     currentUser = 0;
+
+    int numLines = database->getNumlines();
+    if(numLines != 0){
+        for(int i=0; i<numLines; i++){
+            user = database->getUserDb(i);
+            userChain->addUser(user);
+        }
+    }else{
+        Users *adminUser = new Users("admin","root",Users::LEVEL_1);
+        userChain->addUser(adminUser);
+        database->addUserDb(adminUser);
+    }
 
     /***************** init interface *******************/
 
@@ -34,13 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
     fileMenu->addAction(logoutAct);
     fileMenu->addAction(quitAct);
 
-
     editMenu = menuBar->addMenu(tr("&Edit"));
 
     helpMenu = menuBar->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
-
 
     ui->centralWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -61,15 +70,9 @@ MainWindow::MainWindow(QWidget *parent) :
     confWidget->view = view;
     confWidget->hide();
 
-
-    homePath = QDir(QDir::homePath() + "/.photoManager");
-    if(!homePath.exists())
-        QDir().mkdir(homePath.path());
-
     this->setMenuBar(menuBar);
 
-
-    /***************** connection SLOT/SIGNAL *******************/
+    /***************** Connection SLOT/SIGNAL *******************/
 
     QObject::connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
@@ -85,7 +88,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// log in click
+// Login CallBack
 void MainWindow::on_pushButton_clicked()
 {
     QString username = ui->userNameEdit->text();
@@ -109,11 +112,15 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-// submit click
+// Register CallBack
 void MainWindow::on_submitBut_clicked(){
     QString username = ui->usrCnEdit->text();
     QString password = ui->pwCnEdit->text();
     QString passwordconf = ui->pwCfCnEdit->text();
+
+    ui->usrCnEdit->setText("");
+    ui->pwCnEdit->setText("");
+    ui->pwCfCnEdit->setText("");
 
     QMessageBox msgBox;
     msgBox.setStandardButtons(QMessageBox::Ok);
@@ -131,6 +138,7 @@ void MainWindow::on_submitBut_clicked(){
     }else{
         Users *user = new Users(username,password,Users::LEVEL_2);
         userChain->addUser(user);
+        database->addUserDb(user);
         currentUser = user;
         view->show();
         sortWidget->show();
@@ -141,6 +149,7 @@ void MainWindow::on_submitBut_clicked(){
     }
 }
 
+// View mouse click (Left Button) event filter
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress)
@@ -163,6 +172,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
+// Mouse click (Right Button) CallBack
 void MainWindow::showContextMenu(const QPoint &pos)
 {
     QPoint globalPos = view->mapToGlobal(pos);
@@ -230,18 +240,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
     }
 }
 
-void MainWindow::logOut()
-{
-    currentUser = 0;
-    view->hide();
-    confWidget->hide();
-    sortWidget->hide();
-    ui->connectionWidget->show();
-    for(int i=imageCellChain->getCount()-1;i>=0;i--){
-        imageCellChain->deleteCellItemAt(i);
-    }
-}
-
+// CellItem mouse click CallBack
 void MainWindow::onCellItemclicked(CellItem *item)
 {
     view->scene->cellItemSelected  = item;
@@ -268,10 +267,11 @@ void MainWindow::onCellItemclicked(CellItem *item)
 
 }
 
-// fonction appliquée lors de changement de taille de la fenêtre
+// Resize window event CallBack
 void MainWindow::resizeEvent(QResizeEvent*)
 {
     view->resize(ui->centralWidget->frameSize().width()*3/4,ui->centralWidget->frameSize().height());
+
     if(!view->isHidden()){
         if(view->QGraphicsView::scene() == view->scene){
             view->adjustCellItems();
@@ -280,12 +280,11 @@ void MainWindow::resizeEvent(QResizeEvent*)
             view->fitInView(view->sceneProcessing->cellItemSelected->image,Qt::KeepAspectRatio);
             confWidget->show();
         }
-    }else{
-        ui->frame->setGeometry(ui->centralWidget->frameGeometry().center().x()-ui->frame->width()/2,
-                               ui->centralWidget->frameGeometry().center().y()-ui->frame->height()/2,
-                               ui->frame->width(),
-                               ui->frame->height());
     }
+    ui->frame->setGeometry(ui->centralWidget->frameGeometry().center().x()-ui->frame->width()/2,
+                       ui->centralWidget->frameGeometry().center().y()-ui->frame->height()/2,
+                       ui->frame->width(),
+                       ui->frame->height());
 
     sortWidget->resize(ui->centralWidget->frameSize().width()*1/4,ui->centralWidget->frameSize().height());
     sortWidget->setGeometry(ui->centralWidget->frameSize().width() * 3/4, 0, sortWidget->size().width(), sortWidget->size().height());
@@ -295,6 +294,20 @@ void MainWindow::resizeEvent(QResizeEvent*)
 
 }
 
+// logout menu action callback
+void MainWindow::logOut()
+{
+    currentUser = 0;
+    view->hide();
+    confWidget->hide();
+    sortWidget->hide();
+    ui->connectionWidget->show();
+    for(int i=imageCellChain->getCount()-1;i>=0;i--){
+        imageCellChain->deleteCellItemAt(i);
+    }
+}
+
+// About menu action callback
 void MainWindow::about(){
     QMessageBox msgBox;
     msgBox.setWindowTitle("About");
@@ -311,10 +324,8 @@ void MainWindow::about(){
     }
 }
 
+// AboutQt menu action callback
 void MainWindow::aboutQt()
 {
     QMessageBox::aboutQt(this, "About Qt");
 }
-
-
-

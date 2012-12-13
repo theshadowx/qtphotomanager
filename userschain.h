@@ -1,9 +1,6 @@
 #ifndef USERSCHAIN_H
 #define USERSCHAIN_H
 
-#include <QWidget>
-#include <QtGui>
-#include <QtCore>
 #include "users.h"
 
 class UsersChain

@@ -1,9 +1,6 @@
 #ifndef IMAGECELLCHAIN_H
 #define IMAGECELLCHAIN_H
 
-#include <QWidget>
-#include <QtGui>
-#include <QtCore>
 #include "cellitem.h"
 
 class ImageCellChain

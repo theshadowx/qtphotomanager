@@ -1,7 +1,6 @@
 #ifndef GRAPHICSVIEW_H
 #define GRAPHICSVIEW_H
 
-#include <QtSql>
 #include "graphicsscene.h"
 #include "database.h"
 
