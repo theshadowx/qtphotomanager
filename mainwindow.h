@@ -27,7 +27,8 @@ private slots:
     void on_pushButton_clicked();
     void on_submitBut_clicked();
     void showContextMenu(const QPoint &pos);
-
+    void clickEnterLogin();
+    void clickEnterRegister();
     void logOut();
     void about();
     void aboutQt();
@@ -60,6 +61,10 @@ private:
     DataBase *database;
 
     void onCellItemclicked(CellItem *item);
+
+signals:
+    void cellItemClicked();
+
 
 protected:
 

@@ -1,5 +1,10 @@
 #include "imageitem.h"
 
+ImageItem::ImageItem(QGraphicsItem *parent)
+    : QGraphicsPixmapItem(parent)
+{
+}
+
 ImageItem::ImageItem(const QPixmap &pixmap, QGraphicsItem *parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {

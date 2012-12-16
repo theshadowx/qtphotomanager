@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include "users.h"
+#include "cellitem.h"
 
 
 class DataBase : public QSqlDatabase
@@ -15,15 +16,27 @@ public:
     DataBase();
     virtual ~DataBase();
 
+    // User Database
     void addUserDb(Users *user);
     Users* getUserDb(int id);
-    int getNumlines() const;
+    int getUserNumlines() const;
     bool deleteUserDb(QString username);
 
+
+    //image Database
+    void addImageDb(CellItem *cellItem);
+    CellItem* getImageDb(int id);
+    int getImageNumlines() const;
+    bool deleteImageDb(QString imageName);
+
 private:
-    QFile userDbFile;
+
     QDir homePath;
-    int numLines;
+    QDir userPath;
+    QFile userDbFile;
+    QFile imageDbFile;
+    int userNumLines;
+    int imageNumLines;
 
 };
 

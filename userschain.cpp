@@ -102,13 +102,19 @@ Users *UsersChain::userAt(int id) const
 Users *UsersChain::getUser(QString username, QString password) const
 {
     Users *userTmp = userRoot;
+    bool userExists = false;
     while(userTmp){
         if((userTmp->getPassword() == password) && (userTmp->getUsername() == username)){
+            userExists = true;
             break;
         }else{
             userTmp = userTmp->nextUser;
         }
     }
+
+    if (!userExists)
+        userTmp = 0;
+
     return userTmp;
 }
 

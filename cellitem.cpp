@@ -1,14 +1,21 @@
 #include "cellitem.h"
 
-CellItem::CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap,QGraphicsItem* parent)
+CellItem::CellItem()
+{
+    image = new ImageItem(this);
+}
+
+CellItem::CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap,QGraphicsItem* parent, IMAGE_CONFIDENTILITY confidentiality)
     : QGraphicsItem(parent)
 {
 
+    this->id = id;
     imageName = fileName;
     imagePath = filePath;
     imagePrice = price;
+    imageCfdy = confidentiality;
     image = new ImageItem(pixmap,this);
-    this->id = id;
+
 }
 
 void CellItem::setId(int id)
@@ -16,9 +23,29 @@ void CellItem::setId(int id)
     this->id = id;
 }
 
-void CellItem::setImageType(QString imageType)
+void CellItem::setImagePrice(int price)
 {
-    this->imageType = imageType;
+    imagePrice = price;
+}
+
+void CellItem::setImageType(QString type)
+{
+    imageType = type;
+}
+
+void CellItem::setImagePath(QString path)
+{
+    imagePath = path;
+}
+
+void CellItem::setImageName(QString name)
+{
+    imageName = name;
+}
+
+void CellItem::setImageCfdy(CellItem::IMAGE_CONFIDENTILITY confidentiality)
+{
+    imageCfdy = confidentiality;
 }
 
 QString CellItem::getImagePath() const
@@ -34,6 +61,11 @@ QString CellItem::getImageName() const
 QString CellItem::getImageType() const
 {
     return imageType;
+}
+
+CellItem::IMAGE_CONFIDENTILITY CellItem::getImageCfdy() const
+{
+   return imageCfdy;
 }
 
 int CellItem::getImagePrice() const
@@ -64,3 +96,5 @@ void CellItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     event->ignore();
 }
+
+

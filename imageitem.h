@@ -10,6 +10,7 @@ class ImageItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 public:
+    ImageItem(QGraphicsItem *parent);
     ImageItem(const QPixmap &pixmap,QGraphicsItem *parent);
 
     void adjust();

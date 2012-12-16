@@ -53,21 +53,7 @@ unix{
     LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_videostab.so.2.4.3
 }
 win32{
-    LIBS += -L $$_PRO_FILE_PWD_\thirdparty\opencv/lib
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_calib3d.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_core.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_features2d.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_flann.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_highgui.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_imgproc.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_legacy.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_ml.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_objdetect.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_photo.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_stitching.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_ts.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_video.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_\thirdparty\opencv\lib\libopencv_videostab.so.2.4.3
+
 }
 
 unix{

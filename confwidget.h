@@ -8,8 +8,8 @@
 
 #ifdef Q_OS_LINUX
 #include "thirdparty/opencv/include/opencv2/core/core.hpp"
-#include "thirdparty/opencv/include/opencv2/highgui/highgui.hpp"
 #include "thirdparty/opencv/include/opencv2/imgproc/imgproc.hpp"
+#include "thirdparty/opencv/include/opencv2/highgui/highgui.hpp"
 #else
 #endif
 
@@ -29,10 +29,12 @@ public:
     QImage imgProcessed;
 
     graphicsView *view;
+    QGraphicsView *histView;
 
 #ifdef Q_OS_LINUX
     cv::Mat matOriginal;
     cv::Mat matProcessed;
+
 #endif
 
 private:
@@ -42,6 +44,7 @@ private:
     QLabel *brightnessLabel;
     QSlider *contrastSlider;
     QLabel *contrastLabel;
+    QGraphicsPixmapItem *histPixmap;
 
 signals:
     void cancelButton_clicked();
@@ -50,8 +53,8 @@ signals:
 public slots:
     void on_cancelButton_clicked();
     void on_saveButton_clicked();
-    void brightnessValue();
-    void contrastValue();
+    void brightnessContrast();
+    void showHistogram();
 
 protected:
 
