@@ -56,35 +56,37 @@ ConfWidget::ConfWidget(QWidget *parent) :
 
 void ConfWidget::brightnessContrast()
 {
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
     float alpha = ((float) contrastSlider->value())/30;
     float beta = brightnessSlider->value();
 
-    for( int y = 0; y < matProcessed.rows; y++ ){
-        for( int x = 0; x < matProcessed.cols; x++ ){
-            for( int c = 0; c < 3; c++ ){
-                matProcessed.at<cv::Vec3b>(y,x)[c] =
-                        cv::saturate_cast<uchar>( alpha*(matOriginal.at<cv::Vec3b>(y,x)[c] ) + beta );
+    if(!view->sceneProcessing->items().isEmpty()){
+        for( int y = 0; y < matProcessed.rows; y++ ){
+            for( int x = 0; x < matProcessed.cols; x++ ){
+                for( int c = 0; c < 3; c++ ){
+                    matProcessed.at<cv::Vec3b>(y,x)[c] =
+                            cv::saturate_cast<uchar>( alpha*(matOriginal.at<cv::Vec3b>(y,x)[c] ) + beta );
+                }
             }
         }
+
+        ImageItem *item = static_cast<ImageItem*> (view->sceneProcessing->items().at(0));
+
+        cv::cvtColor(matProcessed, matProcessed, CV_BGR2RGB);
+        QImage imagetmp(matProcessed.data, matProcessed.cols,matProcessed.rows,QImage::Format_RGB888);
+        item->setPixmap(QPixmap::fromImage(imagetmp));
+
+        showHistogram();
     }
 
-    ImageItem *item = static_cast<ImageItem*> (view->sceneProcessing->items().at(0));
-
-    cv::cvtColor(matProcessed, matProcessed, CV_BGR2RGB);
-    QImage imagetmp(matProcessed.data, matProcessed.cols,matProcessed.rows,QImage::Format_RGB888);
-    item->setPixmap(QPixmap::fromImage(imagetmp));
-
-    showHistogram();
-
-#endif
+//#endif
 
 }
 
 void ConfWidget::showHistogram()
 {
 
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
     /// Separate the image in 3 places ( B, G and R )
     cv::vector<cv::Mat> bgr_planes;
     cv::split(matProcessed, bgr_planes );
@@ -141,14 +143,12 @@ void ConfWidget::showHistogram()
     histPixmap->setPixmap(QPixmap().fromImage(imageTmp));
     histPixmap->setPos(histView->mapToScene(0, 0));
     histView->fitInView(histPixmap,Qt::KeepAspectRatio);
-#endif
+//#endif
 
 }
 
 void ConfWidget::on_cancelButton_clicked()
 {
-    brightnessSlider->setValue(0);
-    contrastSlider->setValue(30);
 
     qreal scaleFactor = view->transform().m11();
     view->sceneProcessing->cellItemSelected->image->setPixmap(pixOriginal);
@@ -159,6 +159,9 @@ void ConfWidget::on_cancelButton_clicked()
     view->setScene(view->scene);
     view->resize(view->parentWidget()->frameSize().width()*3/4,view->parentWidget()->frameSize().height());
 
+    view->sceneProcessing->cellItemSelected = 0;
+    view->scene->cellItemSelected = 0;
+
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
@@ -166,25 +169,35 @@ void ConfWidget::on_cancelButton_clicked()
 
     emit cancelButton_clicked();
     this->hide();
+
+    brightnessSlider->setValue(0);
+    contrastSlider->setValue(30);
 }
 
 void ConfWidget::on_saveButton_clicked()
 {
-    brightnessSlider->setValue(0);
-    contrastSlider->setValue(30);
-
     qreal scaleFactor = view->transform().m11();
+
     view->scale(1/scaleFactor,1/scaleFactor);
     view->sceneProcessing->removeItem(view->scene->cellItemSelected->image);
     view->scene->addItem(view->scene->cellItemSelected);
     view->scene->cellItemSelected->image->setParentItem(view->scene->cellItemSelected);
     view->setScene(view->scene);
     view->resize(view->parentWidget()->frameSize().width()*3/4,view->parentWidget()->frameSize().height());
-    view->scene->setSceneRect(view->geometry());
+
+    view->sceneProcessing->cellItemSelected = 0;
+    view->scene->cellItemSelected = 0;
+
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
     view->adjustCellItems();
 
     emit saveButton_clicked();
     this->hide();
+
+    brightnessSlider->setValue(0);
+    contrastSlider->setValue(30);
 }
 
 
@@ -206,5 +219,6 @@ void ConfWidget::resizeEvent(QResizeEvent*)
     brightnessLabel->setGeometry(5, 220, 80, 20);
     contrastSlider->setGeometry(90, 245, this->parentWidget()->frameSize().width() * 1/6, 20);
     contrastLabel->setGeometry(5, 245, 80, 20);
+
 
 }

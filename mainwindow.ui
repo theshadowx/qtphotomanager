@@ -150,14 +150,14 @@
            <property name="spacing">
             <number>0</number>
            </property>
-           <item row="0" column="1">
+           <item row="0" column="2">
             <widget class="QLineEdit" name="userNameEdit">
              <property name="alignment">
               <set>Qt::AlignJustify|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="1" column="2">
             <widget class="QLineEdit" name="passwordEdit">
              <property name="autoFillBackground">
               <bool>false</bool>
@@ -199,6 +199,19 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="1">
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
          <item row="2" column="0">
@@ -220,7 +233,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="connectButton">
              <property name="text">
               <string>Connect</string>
              </property>
@@ -255,7 +268,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="2">
           <widget class="QLineEdit" name="usrCnEdit"/>
          </item>
          <item row="1" column="0">
@@ -265,7 +278,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="1" column="2">
           <widget class="QLineEdit" name="pwCnEdit">
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
@@ -279,21 +292,21 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="2" column="2">
           <widget class="QLineEdit" name="pwCfCnEdit">
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="3" column="2">
           <widget class="QPushButton" name="submitBut">
            <property name="text">
             <string>submit</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="4" column="2">
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -302,6 +315,19 @@
             <size>
              <width>20</width>
              <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="1">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
             </size>
            </property>
           </spacer>

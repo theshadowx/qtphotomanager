@@ -107,7 +107,7 @@ MainWindow::~MainWindow()
 }
 
 // Login CallBack
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_connectButton_clicked()
 {
     QString username = ui->userNameEdit->text();
     QString password = ui->passwordEdit->text();
@@ -176,6 +176,7 @@ void MainWindow::on_submitBut_clicked(){
         userChain->addUser(user);
         database->addUserDb(user);
         currentUser = user;
+        view->adjustCellItems();
         view->show();
         sortWidget->show();
         ui->connectionWidget->hide();
@@ -191,16 +192,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress)
     {
-        QMouseEvent* mouseEvent = static_cast<QMouseEvent*> (event);
-        if(view->QGraphicsView::scene() == view->scene){
-            if(mouseEvent->button() == Qt::LeftButton){
-                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(mouseEvent->pos())));
-                if(item!=NULL){
-                    if(view->scene->imageCellChain->contains(item)){
-                        onCellItemclicked(item);
-                    }else{
-                        CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
-                        onCellItemclicked(itemParent);
+        if(currentUser->getPermission()==1){
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*> (event);
+            if(view->QGraphicsView::scene() == view->scene){
+                if(mouseEvent->button() == Qt::LeftButton){
+                    CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(mouseEvent->pos())));
+                    if(item!=NULL){
+                        if(view->scene->imageCellChain->contains(item)){
+                            onCellItemclicked(item);
+                        }else{
+                            CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                            onCellItemclicked(itemParent);
+                        }
                     }
                 }
             }
@@ -219,70 +222,72 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction deleteImageAction("Delete this image",&optionMenu);
     QAction insertImageAction("insert an image",&optionMenu);
 
-    if(view->QGraphicsView::scene()==view->scene){
-        if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
-            optionMenu.addAction(&processImageAction);
-            optionMenu.addAction(&deleteImageAction);
-            optionMenu.addAction(&insertImageAction);
-        }else{
-            optionMenu.addAction(&insertImageAction);
-        }
-
-        QAction* selectedOption = optionMenu.exec(globalPos);
-
-        if(selectedOption == &processImageAction){
-            CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
-            if(item!=NULL){
-                if(view->scene->imageCellChain->contains(item)){
-                    onCellItemclicked(item);
-                }else{
-                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
-                    onCellItemclicked(itemParent);
-                }
+    if(currentUser->getPermission()==1){
+        if(view->QGraphicsView::scene()==view->scene){
+            if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
+                optionMenu.addAction(&processImageAction);
+                optionMenu.addAction(&deleteImageAction);
+                optionMenu.addAction(&insertImageAction);
+            }else{
+                optionMenu.addAction(&insertImageAction);
             }
-        }else if(selectedOption == &deleteImageAction){
-            CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
-            if(item!=NULL){
-                if(view->scene->imageCellChain->contains(item)){
-                    database->deleteImageDb(item->getImageName());
-                    view->scene->imageCellChain->deleteCellItem(item);
-                }else{
-                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
-                    database->deleteImageDb(itemParent->getImageName());
-                    view->scene->imageCellChain->deleteCellItem(itemParent);
+
+            QAction* selectedOption = optionMenu.exec(globalPos);
+
+            if(selectedOption == &processImageAction){
+                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+                if(item!=NULL){
+                    if(view->scene->imageCellChain->contains(item)){
+                        onCellItemclicked(item);
+                    }else{
+                        CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                        onCellItemclicked(itemParent);
+                    }
                 }
+            }else if(selectedOption == &deleteImageAction){
+                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+                if(item!=NULL){
+                    if(view->scene->imageCellChain->contains(item)){
+                        database->deleteImageDb(item->getImageName());
+                        view->scene->imageCellChain->deleteCellItem(item);
+                    }else{
+                        CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                        database->deleteImageDb(itemParent->getImageName());
+                        view->scene->imageCellChain->deleteCellItem(itemParent);
+                    }
+                    view->adjustCellItems();
+                }
+            }else if(selectedOption == &insertImageAction){
+                QStringList fileNames;
+                QFileDialog dialog(this);
+                dialog.setFileMode(QFileDialog::ExistingFiles);
+                QFileInfo fileInfo;
+                dialog.setNameFilter("Images (*.png *.bmp *.jpg)");
+                if (dialog.exec()){
+                    fileNames = dialog.selectedFiles();
+                    for(int i=0; i<fileNames.count();i++){
+                        fileInfo.setFile(fileNames.at(i));
+                        CellItem *cellItem = new CellItem(i,
+                                                          fileInfo.baseName(),
+                                                          fileInfo.absolutePath(),
+                                                          500,
+                                                          QPixmap(fileInfo.absoluteFilePath()));
+                        cellItem->setImageType(fileInfo.completeSuffix());
+                        imageCellChain->addCellItem(cellItem);
+                        database->addImageDb(cellItem);
+                        view->scene->addItem(cellItem);
+                    }
                 view->adjustCellItems();
-            }
-        }else if(selectedOption == &insertImageAction){
-            QStringList fileNames;
-            QFileDialog dialog(this);
-            dialog.setFileMode(QFileDialog::ExistingFiles);
-            QFileInfo fileInfo;
-            dialog.setNameFilter("Images (*.png *.bmp *.jpg)");
-            if (dialog.exec()){
-                fileNames = dialog.selectedFiles();
-                for(int i=0; i<fileNames.count();i++){
-                    fileInfo.setFile(fileNames.at(i));
-                    CellItem *cellItem = new CellItem(i,
-                                                      fileInfo.baseName(),
-                                                      fileInfo.absolutePath(),
-                                                      500,
-                                                      QPixmap(fileInfo.absoluteFilePath()));
-                    cellItem->setImageType(fileInfo.completeSuffix());
-                    imageCellChain->addCellItem(cellItem);
-                    database->addImageDb(cellItem);
-                    view->scene->addItem(cellItem);
                 }
-            view->adjustCellItems();
-            }
 
+            }
         }
     }
 }
 
 void MainWindow::clickEnterLogin()
 {
-    on_pushButton_clicked();
+    on_connectButton_clicked();
 }
 
 void MainWindow::clickEnterRegister()
@@ -299,23 +304,22 @@ void MainWindow::onCellItemclicked(CellItem *item)
     view->scene->removeItem(view->scene->cellItemSelected);
     view->sceneProcessing->addItem(view->scene->cellItemSelected->image);
     view->sceneProcessing->cellItemSelected = view->scene->cellItemSelected;
-
-    sortWidget->hide();
-
-    confWidget->resize(confWidget->parentWidget()->frameSize().width()*1/4,confWidget->parentWidget()->frameSize().height());
-    confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
-    confWidget->show();
-
-    #ifdef Q_OS_LINUX
-    QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
-        confWidget->matOriginal = cv::imread(strPath.toStdString());
-        confWidget->matProcessed = cv::imread(strPath.toStdString());
-    #endif
-
-    confWidget->pixOriginal = item->image->pixmap();
     view->fitInView(view->scene->cellItemSelected->image,Qt::KeepAspectRatio);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+
+    QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
+    confWidget->matOriginal = cv::imread(strPath.toStdString());
+    confWidget->matProcessed = cv::imread(strPath.toStdString());
+
+
+    confWidget->resize(confWidget->parentWidget()->frameSize().width()*1/4,confWidget->parentWidget()->frameSize().height());
+    confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
+    confWidget->pixOriginal = item->image->pixmap();
+
+    sortWidget->hide();
+    confWidget->show();
 
     emit cellItemClicked();
 

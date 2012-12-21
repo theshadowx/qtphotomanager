@@ -13,20 +13,50 @@
 class DataBase : public QSqlDatabase
 {
 public:
+    /*!
+     *
+     */
     DataBase();
+    /*!
+     *
+     */
     virtual ~DataBase();
 
     // User Database
+    /*!
+     *
+     */
     void addUserDb(Users *user);
+    /*!
+     *
+     */
     Users* getUserDb(int id);
+    /*!
+     *
+     */
     int getUserNumlines() const;
+    /*!
+     *
+     */
     bool deleteUserDb(QString username);
 
 
     //image Database
+    /*!
+     *
+     */
     void addImageDb(CellItem *cellItem);
+    /*!
+     *
+     */
     CellItem* getImageDb(int id);
+    /*!
+     *
+     */
     int getImageNumlines() const;
+    /*!
+     *
+     */
     bool deleteImageDb(QString imageName);
 
 private:

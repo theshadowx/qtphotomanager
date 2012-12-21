@@ -6,11 +6,21 @@
 #include <QtCore>
 #include "graphicsview.h"
 
+
+/*!
+ *
+ */
 class SortWidget : public QWidget
 {
     Q_OBJECT
 public:
+    /*!
+     *
+     */
     explicit SortWidget(QWidget *parent = 0);
+    /*!
+     *
+     */
     graphicsView *view;
 
 signals:

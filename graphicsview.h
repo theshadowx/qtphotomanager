@@ -10,17 +10,22 @@ class graphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
-
+    /*!
+     *
+     */
     graphicsView(QWidget *parent=0);
-
+    /*!
+     *
+     */
     void adjustCellItems();
 
     graphicsScene *scene;
     graphicsScene *sceneProcessing;
 
-public slots:
-
 protected:
+    /*!
+     *
+     */
     virtual void mousePressEvent(QMouseEvent* event);
 
 };

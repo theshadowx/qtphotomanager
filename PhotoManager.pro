@@ -35,29 +35,18 @@ OTHER_FILES +=
 RESOURCES += \
     image.qrc
 
-unix{
-    LIBS += -L $$_PRO_FILE_PWD_/thirdparty/opencv/lib
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_calib3d.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_core.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_features2d.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_flann.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_highgui.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_imgproc.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_legacy.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_ml.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_objdetect.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_photo.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_stitching.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_ts.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_video.so.2.4.3
-    LIBS += $$_PRO_FILE_PWD_/thirdparty/opencv/lib/libopencv_videostab.so.2.4.3
-}
-win32{
-
-}
+exists( $OpenCv ) {
+       message( "Please add OpenCv to you variable environment" )
+ }
 
 unix{
-    ParentDirectory = ../PhotoManager_tmp
+    INCLUDEPATH +=/usr/local/include/
+    LIBS += -L/usr/local/lib
+    LIBS += /usr/local/lib/libopencv_core.so
+    LIBS += /usr/local/lib/libopencv_imgproc.so
+    LIBS += /usr/local/lib/libopencv_highgui.so
+
+    ParentDirectory = ../PhotoManager_build
 
     RCC_DIR = "$$ParentDirectory/Build/RCCFiles"
     UI_DIR = "$$ParentDirectory/Build/UICFiles"
@@ -72,19 +61,26 @@ unix{
         DESTDIR = "$$ParentDirectory/release"
     }
 }
-win32{
-    ParentDirectory = ..\PhotoManager_tmp
 
-    RCC_DIR = "$$ParentDirectory\Build\RCCFiles"
-    UI_DIR = "$$ParentDirectory\Build\UICFiles"
-    MOC_DIR = "$$ParentDirectory\Build\MOCFiles"
-    OBJECTS_DIR = "$$ParentDirectory\Build\ObjFiles"
+win32{
+    INCLUDEPATH +=C:/OpenCv/build/debug/include
+    LIBS += -L C:/OpenCv/build/debug/bin \
+            -llibopencv_core243d \
+            -llibopencv_imgproc243d \
+            -llibopencv_highgui243d
+
+    ParentDirectory = ..\PhotoManager_build
+
+    RCC_DIR = "$$ParentDirectory\\Build\\RCCFiles"
+    UI_DIR = "$$ParentDirectory\\Build\\UICFiles"
+    MOC_DIR = "$$ParentDirectory\\Build\\MOCFiles"
+    OBJECTS_DIR = "$$ParentDirectory\\Build\\ObjFiles"
 
 
     CONFIG(debug, debug|release) {
-        DESTDIR = "$$ParentDirectory\debug"
+        DESTDIR = "$$ParentDirectory\\debug"
     }
     CONFIG(release, debug|release) {
-        DESTDIR = "$$ParentDirectory\release"
+        DESTDIR = "$$ParentDirectory\\release"
     }
 }
