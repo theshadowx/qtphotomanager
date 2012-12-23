@@ -19,5 +19,11 @@ void ImageItem::adjust()
 }
 
 
+void ImageItem::adjust(int sx, int sy)
+{
+    QMatrix matrix;
+    matrix.scale(sx/ boundingRect().width(), sy/ boundingRect().height());
+    setMatrix(matrix);
+}
 
 

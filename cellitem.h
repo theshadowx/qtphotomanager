@@ -6,10 +6,12 @@
 class CellItem:  public QGraphicsItem
 {
 public:
+
     /*!
      *
      */
-    enum IMAGE_CONFIDENTILITY{F=0,R=1};
+    enum IMAGE_CONFIDENTIALITY{F=0, R=1};
+    enum IMAGE_SIZE{SMALL=0, MEDIUM=1, LARGE=2};
     /*!
      *
      */
@@ -17,7 +19,7 @@ public:
     /*!
      *
      */
-    CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap, QGraphicsItem *parent = 0, IMAGE_CONFIDENTILITY confidentiality = R);
+    CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap, QGraphicsItem *parent = 0, IMAGE_CONFIDENTIALITY confidentiality = R, IMAGE_SIZE size = MEDIUM);
 
     /*!
      *
@@ -42,7 +44,22 @@ public:
     /*!
      *
      */
-    void setImageCfdy(IMAGE_CONFIDENTILITY confidentiality);
+    void setImageRt(IMAGE_CONFIDENTIALITY confidentiality);
+    /*!
+     *
+     */
+    void setImageSize(IMAGE_SIZE size);
+    /*!
+     *
+     */
+    QString enumSizeToQString();
+    /*!
+     *
+     */
+    QString enumCfdyToQString();
+
+
+
 
 
     /*!
@@ -68,7 +85,11 @@ public:
     /*!
      *
      */
-    IMAGE_CONFIDENTILITY getImageCfdy() const;
+    IMAGE_CONFIDENTIALITY getImageCfdy() const;
+    /*!
+     *
+     */
+    IMAGE_SIZE getImageSize() const;
 
 
     /*!
@@ -96,7 +117,8 @@ private:
     QString imageName;
     QString imagePath;
     QString imageType;
-    IMAGE_CONFIDENTILITY imageCfdy;
+    IMAGE_SIZE imageSize;
+    IMAGE_CONFIDENTIALITY imageCfdy;
     int imagePrice;
     int id;
 };

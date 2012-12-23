@@ -13,22 +13,22 @@ public:
     /*!
      *
      */
-    ImageItem(QGraphicsItem *parent);
+    ImageItem(QGraphicsItem *parent = 0);
     /*!
      *
      */
-    ImageItem(const QPixmap &pixmap,QGraphicsItem *parent);
+    ImageItem(const QPixmap &pixmap,QGraphicsItem *parent = 0);
 
     /*!
      *
      */
     void adjust();
 
-protected:
 
-
-private slots:
-
+    /*!
+     *
+     */
+    void adjust(int sx, int sy);
 
 };
 

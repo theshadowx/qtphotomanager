@@ -10,7 +10,8 @@ SOURCES += \
     sortwidget.cpp \
     users.cpp \
     userschain.cpp \
-    imagecellchain.cpp
+    imagecellchain.cpp \
+    dialogproperties.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -23,7 +24,8 @@ HEADERS += \
     sortwidget.h \
     users.h \
     userschain.h \
-    imagecellchain.h
+    imagecellchain.h \
+    dialogproperties.h
 
 QT += sql
 
@@ -35,9 +37,6 @@ OTHER_FILES +=
 RESOURCES += \
     image.qrc
 
-exists( $OpenCv ) {
-       message( "Please add OpenCv to you variable environment" )
- }
 
 unix{
     INCLUDEPATH +=/usr/local/include/
@@ -63,11 +62,11 @@ unix{
 }
 
 win32{
-    INCLUDEPATH +=C:/OpenCv/build/debug/include
-    LIBS += -L C:/OpenCv/build/debug/bin \
-            -llibopencv_core243d \
-            -llibopencv_imgproc243d \
-            -llibopencv_highgui243d
+    INCLUDEPATH +=C:/OpenCv/build/release/include
+    LIBS += -L C:/OpenCv/build/release/bin \
+            -llibopencv_core243 \
+            -llibopencv_imgproc243 \
+            -llibopencv_highgui243
 
     ParentDirectory = ..\PhotoManager_build
 

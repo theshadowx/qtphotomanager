@@ -10,6 +10,7 @@
 #include "sortwidget.h"
 #include "userschain.h"
 #include "imagecellchain.h"
+#include "dialogproperties.h"
 
 namespace Ui {
 class MainWindow;

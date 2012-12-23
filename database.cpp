@@ -124,7 +124,8 @@ void DataBase::addImageDb(CellItem* cellItem)
                  cellItem->getImagePath() + " " +
                  cellItem->getImageType() + " " +
                  QString("%1").arg(cellItem->getImagePrice()) + " " +
-                 QString("%1").arg(cellItem->getImageCfdy()) << endl;
+                 QString("%1").arg(cellItem->getImageCfdy()) + " " +
+                 QString("%1").arg(cellItem->getImageSize()) << endl;
     imageNumLines++;
 }
 
@@ -146,7 +147,8 @@ CellItem* DataBase::getImageDb(int id)
     cellItem->setImagePath(line.at(2));
     cellItem->setImageType(line.at(3));
     cellItem->setImagePrice(line.at(4).toInt());
-    cellItem->setImageCfdy((CellItem::IMAGE_CONFIDENTILITY)QString(line.at(5)).toInt());
+    cellItem->setImageRt((CellItem::IMAGE_CONFIDENTIALITY)QString(line.at(5)).toInt());
+    cellItem->setImageSize((CellItem::IMAGE_SIZE)QString(line.at(6)).toInt());
     cellItem->image->setPixmap(QPixmap(cellItem->getImagePath() + QDir().separator() + cellItem->getImageName() + "." + cellItem->getImageType()));
     cellItem->image->adjust();
     return cellItem;

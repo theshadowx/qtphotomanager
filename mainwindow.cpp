@@ -190,7 +190,7 @@ void MainWindow::on_submitBut_clicked(){
 // View mouse click (Left Button) event filter
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::MouseButtonPress)
+    if (event->type() == QEvent::MouseButtonDblClick)
     {
         if(currentUser->getPermission()==1){
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*> (event);
@@ -221,6 +221,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction processImageAction("Process this image",&optionMenu);
     QAction deleteImageAction("Delete this image",&optionMenu);
     QAction insertImageAction("insert an image",&optionMenu);
+    QAction imagePropAction("Properties",&optionMenu);
 
     if(currentUser->getPermission()==1){
         if(view->QGraphicsView::scene()==view->scene){
@@ -228,6 +229,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                 optionMenu.addAction(&processImageAction);
                 optionMenu.addAction(&deleteImageAction);
                 optionMenu.addAction(&insertImageAction);
+                optionMenu.addAction(&imagePropAction);
             }else{
                 optionMenu.addAction(&insertImageAction);
             }
@@ -279,6 +281,19 @@ void MainWindow::showContextMenu(const QPoint &pos)
                     }
                 view->adjustCellItems();
                 }
+
+            }else if(selectedOption == &imagePropAction){
+                QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos));
+                CellItem *cellItem = 0;
+
+                if(view->scene->imageCellChain->contains(static_cast<CellItem*> (item))){
+                   cellItem = static_cast<CellItem*> (item);
+                }else{
+                   cellItem = static_cast<CellItem*> (item->parentItem());
+                }
+
+                DialogProperties dialogProperties(cellItem,this);
+                dialogProperties.exec();
 
             }
         }

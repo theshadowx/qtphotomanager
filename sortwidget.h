@@ -33,16 +33,17 @@ private:
     QLabel *sizeFilter;
     QLabel *typeFilter;
 
-    QButtonGroup *resoButtonGroup;
+    //QButtonGroup *resoButtonGroup;
     QButtonGroup *priceButtonGroup;
     QButtonGroup *sizeButtonGroup;
     QButtonGroup *typeButtonGroup;
 
-    QRadioButton *anyReso;
-    QRadioButton *smallReso;
-    QRadioButton *mediumReso;
-    QRadioButton *largeReso;
-
+    /*
+        QRadioButton *anyReso;
+        QRadioButton *smallReso;
+        QRadioButton *mediumReso;
+        QRadioButton *largeReso;
+    */
     QRadioButton *anyPrice;
     QRadioButton *freePrice;
     QRadioButton *lowPrice;
