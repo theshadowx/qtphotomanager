@@ -10,8 +10,16 @@ ConfWidget::ConfWidget(QWidget *parent) :
     brightnessLabel = new QLabel("Brightness",this);
     contrastSlider = new QSlider(Qt::Horizontal,this);
     contrastLabel = new QLabel("Contrast",this);
+    layout = new QHBoxLayout(this);
     saveButton = new QPushButton("Save",this);
     cancelButton = new QPushButton("Cancel",this);
+    leftSpacer = new QSpacerItem(50,20,QSizePolicy::Expanding);
+    rightSpacer = new QSpacerItem(50,20,QSizePolicy::Expanding);
+
+    layout->addSpacerItem(leftSpacer);
+    layout->addWidget(saveButton);
+    layout->addWidget(cancelButton);
+    layout->addSpacerItem(rightSpacer);
 
     QGraphicsScene *scene = new QGraphicsScene(histView);
 
@@ -20,14 +28,17 @@ ConfWidget::ConfWidget(QWidget *parent) :
     brightnessLabel->setGeometry(5, 220, 80, 20);
     contrastSlider->setGeometry(90, 245, 1250 * 1/6, 20);
     contrastLabel->setGeometry(5, 245, 80, 20);
-
-    saveButton->setGeometry(1250 * 1/16, 750 * 3/4,
+/*
+    saveButton->setGeometry(1250 * 1/16,
+                            750 * 3/4,
                             saveButton->size().width(),
                             saveButton->size().height());
-    cancelButton->setGeometry(1250 * 1/16 + saveButton->size().width(), 750 * 3/4,
+
+    cancelButton->setGeometry(1250 * 1/16 + 20 + saveButton->size().width(),
+                              750 * 3/4,
                               cancelButton->size().width(),
                               cancelButton->size().height());
-
+*/
     histView->setScene(scene);
     histView->scene()->addItem(histPixmap);
     histPixmap->setPos(histView->mapToScene(0, 0));
@@ -71,12 +82,13 @@ void ConfWidget::brightnessContrast()
         }
 
         ImageItem *item = static_cast<ImageItem*> (view->sceneProcessing->items().at(0));
+        cv::Mat matProcessedRGB( matProcessed.rows, matProcessed.cols, CV_8UC3, cv::Scalar( 255,255,255) );
 
-        cv::cvtColor(matProcessed, matProcessed, CV_BGR2RGB);
-        QImage imagetmp(matProcessed.data, matProcessed.cols,matProcessed.rows,QImage::Format_RGB888);
+        cv::cvtColor(matProcessed, matProcessedRGB, CV_BGR2RGB);
+        QImage imagetmp(matProcessedRGB.data, matProcessedRGB.cols,matProcessedRGB.rows,matProcessedRGB.step,QImage::Format_RGB888);
         item->setPixmap(QPixmap::fromImage(imagetmp));
 
-        showHistogram();
+        this->showHistogram();
     }
 
 //#endif
@@ -89,19 +101,21 @@ void ConfWidget::showHistogram()
 //#ifdef Q_OS_LINUX
     /// Separate the image in 3 places ( B, G and R )
     cv::vector<cv::Mat> bgr_planes;
-    cv::split(matProcessed, bgr_planes );
+    cv::split(matProcessed, bgr_planes);
 
     /// Establish the number of bins
     int histSize = 256;
 
     /// Set the ranges (for B,G,R))
     float range[] = { 0, 256 } ;
-    const float* histRange = { range };
+    const float *histRange = { range };
 
     bool uniform = true;
     bool accumulate = false;
 
-    cv::Mat b_hist, g_hist, r_hist;
+    cv::Mat b_hist;
+    cv::Mat g_hist;
+    cv::Mat r_hist;
 
     /// Compute the histograms:
     cv::calcHist(&bgr_planes[0], 1, 0, cv::Mat(), b_hist, 1, &histSize, &histRange, uniform, accumulate);
@@ -109,12 +123,12 @@ void ConfWidget::showHistogram()
     cv::calcHist(&bgr_planes[2], 1, 0, cv::Mat(), r_hist, 1, &histSize, &histRange, uniform, accumulate);
 
     /// Draw the histograms for B, G and R
-    int hist_w = (int) histView->size().width();
-    int hist_h = (int) histView->size().height();
+    int hist_w = histView->size().width();
+    int hist_h = histView->size().height();
     int bin_w = cvRound((double) hist_w/histSize );
 
     cv::Mat histImage( hist_h, hist_w, CV_8UC3, cv::Scalar( 255,255,255) );
-    cv::Mat histImageRGB( hist_h, hist_w, CV_8UC3, cv::Scalar( 255,255,255) );
+    //cv::Mat histImageRGB( hist_h, hist_w, CV_8UC3, cv::Scalar( 255,255,255) );
 
     /// Normalize the result to [ 0, histImage.rows ]
     cv::normalize(b_hist, b_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat() );
@@ -135,11 +149,12 @@ void ConfWidget::showHistogram()
                   cv::Scalar( 0, 0, 255), 2, 8, 0);
     }
 
-    //cv::namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
+    //cv::namedWindow("calcHist Demo", CV_WINDOW_NORMAL);
     //cv::imshow("calcHist Demo", histImage );
 
-    cv::cvtColor(histImage,histImageRGB,CV_BGR2RGB);
-    QImage imageTmp(histImageRGB.data, histImageRGB.cols,histImageRGB.rows,QImage::Format_RGB888);
+    //cv::cvtColor(histImage,histImageRGB,CV_BGR2RGB);
+
+    QImage imageTmp(histImage.data, histImage.cols,histImage.rows,histImage.step,QImage::Format_RGB666);
     histPixmap->setPixmap(QPixmap().fromImage(imageTmp));
     histPixmap->setPos(histView->mapToScene(0, 0));
     histView->fitInView(histPixmap,Qt::KeepAspectRatio);
@@ -203,11 +218,13 @@ void ConfWidget::on_saveButton_clicked()
 
 void ConfWidget::resizeEvent(QResizeEvent*)
 {
+ /*
     saveButton->setGeometry(this->size().width() * 1/4,this->size().height() * 3/4,
                             saveButton->size().width(),saveButton->size().height());
-    cancelButton->setGeometry(size().width() * 1/4 + saveButton->size().width(), size().height() * 3/4,
-                              cancelButton->size().width(),cancelButton->size().height());
 
+    cancelButton->setGeometry(size().width() * 1/4 + saveButton->size().width() + 20, size().height() * 3/4,
+                              cancelButton->size().width(),cancelButton->size().height());
+*/
 
     histView->setGeometry(5,20,this->parentWidget()->frameSize().width()*1/4 - 10,200);
     histView->setSceneRect(histView->geometry());
@@ -219,6 +236,12 @@ void ConfWidget::resizeEvent(QResizeEvent*)
     brightnessLabel->setGeometry(5, 220, 80, 20);
     contrastSlider->setGeometry(90, 245, this->parentWidget()->frameSize().width() * 1/6, 20);
     contrastLabel->setGeometry(5, 245, 80, 20);
+}
 
-
+void ConfWidget::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }

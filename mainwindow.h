@@ -20,7 +20,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     /*!
     * Constructs a MainWindow with the given parent.
@@ -30,6 +30,42 @@ public:
      * Destroys the main window.
      */
     ~MainWindow();
+
+
+protected:
+    /*!
+    *   This event handler can be reimplemented in a subclass to receive widget resize events which are passed in the event parameter. When resizeEvent() is called,
+    *   the widget already has its new geometry. The old size is accessible through QResizeEvent::oldSize().
+    *
+    *   The widget will be erased and receive a paint event immediately after processing the resize event. No drawing need be (or should be) done inside this handler.
+    */
+    virtual void resizeEvent(QResizeEvent* );
+
+private:
+    QMenu          *fileMenu;
+    QMenu          *editMenu;
+    QMenu          *helpMenu;
+
+    QAction        *logoutAct;
+    QAction        *quitAct;
+    QAction        *aboutAct;
+    QAction        *aboutQtAct;
+
+    QMenuBar       *menuBar;
+    QStatusBar     *statusBar;
+    ConfWidget     *confWidget;
+    SortWidget     *sortWidget;
+    GraphicsView   *view;
+
+    Ui::MainWindow  *ui;
+    Users           *currentUser;
+    UsersChain      *userChain;
+    ImageCellChain  *imageCellChain;
+    DataBase        *database;
+
+
+signals:
+    void cellItemClicked();
 
 private slots:
     /*!
@@ -67,6 +103,11 @@ private slots:
     */
     void clickEnterRegister();
     /*!
+     * This function is called when an image is clicked.
+     * It hides the global scene and sortwidget and shows sceneProcessed and confwidget
+     */
+    void onCellItemclicked(CellItem *item);
+    /*!
     *   The user will be logged out.
     */
     void logOut();
@@ -78,56 +119,6 @@ private slots:
     *   This will show information about the Qt used.
     */
     void aboutQt();
-
-
-private:
-
-    QMenu          *fileMenu;
-    QMenu          *editMenu;
-    QMenu          *helpMenu;
-    QActionGroup   *alignmentGroup;
-    QAction        *logoutAct;
-    QAction        *quitAct;
-    QAction        *aboutAct;
-    QAction        *aboutQtAct;
-    QLabel         *infoLabel;
-
-    QMenuBar       *menuBar;
-    QStatusBar     *statusBar;
-    ConfWidget     *confWidget;
-    SortWidget     *sortWidget;
-    graphicsView   *view;
-
-
-    Ui::MainWindow *ui;
-    Users *currentUser;
-    UsersChain *userChain;
-    ImageCellChain * imageCellChain;
-    DataBase *database;
-
-    /*!
-     * This function is called when an image is clicked.
-     * It hides the global scene and sortwidget and shows sceneProcessed and confwidget
-     */
-    void onCellItemclicked(CellItem *item);
-
-signals:
-    void cellItemClicked();
-
-
-protected:
-    /*!
-    *   Filters events if this object has been installed as an event filter for the watched object.
-    */
-    virtual bool eventFilter(QObject * obj, QEvent *event);
-    /*!
-    *   This event handler can be reimplemented in a subclass to receive widget resize events which are passed in the event parameter. When resizeEvent() is called,
-    *   the widget already has its new geometry. The old size is accessible through QResizeEvent::oldSize().
-    *
-    *   The widget will be erased and receive a paint event immediately after processing the resize event. No drawing need be (or should be) done inside this handler.
-    */
-    virtual void resizeEvent(QResizeEvent* );
-
 
 };
 

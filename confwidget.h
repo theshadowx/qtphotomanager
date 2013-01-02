@@ -10,37 +10,31 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
-
-
-class graphicsView;
-
 class ConfWidget : public QWidget
 {
     Q_OBJECT
 public:
-    /*!
-     *
-     */
     explicit ConfWidget(QWidget *parent = 0);
-    /*!
-     *
-     */
-    void resizeEvent(QResizeEvent *);
 
     QPixmap pixOriginal;
     QPixmap pixProcessed;
-    QImage imgOriginal;
-    QImage imgProcessed;
-
-    graphicsView *view;
-    QGraphicsView *histView;
 
     cv::Mat matOriginal;
     cv::Mat matProcessed;
 
+    GraphicsView *view;
+    QGraphicsView *histView;
+
+protected:
+    void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *);
+
 private:
+    QHBoxLayout *layout;
     QPushButton *cancelButton;
     QPushButton *saveButton;
+    QSpacerItem *leftSpacer;
+    QSpacerItem *rightSpacer;
     QSlider *brightnessSlider;
     QLabel *brightnessLabel;
     QSlider *contrastSlider;
@@ -48,34 +42,15 @@ private:
     QGraphicsPixmapItem *histPixmap;
 
 signals:
-    /*!
-     *
-     */
     void cancelButton_clicked();
-    /*!
-     *
-     */
     void saveButton_clicked();
 
 public slots:
-    /*!
-     *
-     */
     void on_cancelButton_clicked();
-    /*!
-     *
-     */
     void on_saveButton_clicked();
-    /*!
-     *
-     */
     void brightnessContrast();
-    /*!
-     *
-     */
     void showHistogram();
 
-    
 };
 
 #endif // CONFWIDGET_H

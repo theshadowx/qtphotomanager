@@ -4,29 +4,26 @@
 #include "graphicsscene.h"
 #include "database.h"
 
-class ConfWidget;
+//class ConfWidget;
 
-class graphicsView : public QGraphicsView
+class GraphicsView : public QGraphicsView
 {
     Q_OBJECT
+
 public:
-    /*!
-     *
-     */
-    graphicsView(QWidget *parent=0);
-    /*!
-     *
-     */
+    GraphicsView(QWidget *parent=0);
+
     void adjustCellItems();
 
-    graphicsScene *scene;
-    graphicsScene *sceneProcessing;
+    GraphicsScene *scene;
+    GraphicsScene *sceneProcessing;
 
 protected:
-    /*!
-     *
-     */
-    virtual void mousePressEvent(QMouseEvent* event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent* event);
+
+signals:
+    void cellItemClicked(CellItem *item);
 
 };
  

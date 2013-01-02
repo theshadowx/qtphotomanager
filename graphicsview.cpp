@@ -1,24 +1,19 @@
 #include "graphicsview.h"
 
-graphicsView::graphicsView(QWidget *parent)
+GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    scene = new graphicsScene(this);
+    scene = new GraphicsScene(this);
     scene->setSceneRect(-300, -300, 600, 600);
     setScene(scene);
 
-    sceneProcessing = new graphicsScene(this);
+    sceneProcessing = new GraphicsScene(this);
     sceneProcessing->setSceneRect(-300, -300, 600, 600);
 
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
-void graphicsView::mousePressEvent(QMouseEvent* event)
-{
-    QGraphicsView::mousePressEvent(event);
-}
-
-void graphicsView::adjustCellItems()
+void GraphicsView::adjustCellItems()
 {
     int itemsCount = scene->imageCellChain->getCount();
 
@@ -49,3 +44,51 @@ void graphicsView::adjustCellItems()
     }
 
 }
+
+void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if(this->QGraphicsView::scene() == this->scene){
+        if(event->button() == Qt::LeftButton){
+            CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos())));
+            if(item!=NULL){
+                if(scene->imageCellChain->contains(item)){
+                    emit cellItemClicked(item);
+                }else{
+                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                    emit cellItemClicked(itemParent);
+                }
+            }
+        }
+    }
+    QGraphicsView::mouseDoubleClickEvent(event);
+}
+
+void GraphicsView::mousePressEvent(QMouseEvent *event)
+{
+
+    QList<QGraphicsItem *> cellItemList = this->scene->selectedItems();
+    for(int i=0; i<cellItemList.length();i++){
+        CellItem* cellItem = static_cast<CellItem*> (cellItemList.at(i));
+        cellItem->setColor(QColor(255,255,255));
+        cellItem->setSelected(false);
+    }
+
+    if(this->QGraphicsView::scene() == this->scene){
+        if(event->button() == Qt::LeftButton){
+            CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos())));
+            if(item!=NULL){
+                if(scene->imageCellChain->contains(item)){
+                    item->setColor(QColor(135,135,135));
+                    item->setSelected(true);
+                }else{
+                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                    itemParent->setColor(QColor(135,135,135));
+                    itemParent->setSelected(true);
+                }
+            }
+        }
+    }
+    QGraphicsView::mousePressEvent(event);
+
+}
+

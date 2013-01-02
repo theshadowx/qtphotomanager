@@ -6,38 +6,17 @@
 class ImageCellChain
 {
 public:
-    /*!
-     *
-     */
     ImageCellChain();
 
-    /*!
-     *
-     */
     void addCellItem(CellItem *cellItem);
-    /*!
-     *
-     */
     bool addCellItemAt(CellItem *cellItem,int id);
-    /*!
-     *
-     */
+
     void deleteCellItem(CellItem *cellItem);
-    /*!
-     *
-     */
     void deleteCellItemAt(int id);
-    /*!
-     *
-     */
+
     bool contains(CellItem *cellItem) const;
-    /*!
-     *
-     */
+    bool contains(QString imageName) const;
     CellItem* cellItemAt(int id) const;
-    /*!
-     *
-     */
     int getCount() const;
 
 private:

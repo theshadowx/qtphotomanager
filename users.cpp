@@ -2,7 +2,7 @@
 
 Users::Users()
 {
-    this->id = 0;
+    userId = 0;
     username = "";
     password = "";
 
@@ -12,7 +12,7 @@ Users::Users()
 
 Users::Users(const QString username, const QString password, USER_PERMISSION permission, int id)
 {
-    this->id = id;
+    userId = id;
     this->username = username;
     this->password = password;
     this->permission = permission;
@@ -36,9 +36,9 @@ void Users::setPermission(const Users::USER_PERMISSION permission)
     this->permission = permission;
 }
 
-void Users::setId(int id)
+void Users::setUserId(int id)
 {
-    this->id = id;
+    userId = id;
 }
 
 QString Users::getUsername() const
@@ -56,7 +56,7 @@ Users::USER_PERMISSION Users::getPermission() const
     return permission;
 }
 
-int Users::getId() const
+int Users::getUserId() const
 {
-    return id;
+    return userId;
 }

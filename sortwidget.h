@@ -7,43 +7,25 @@
 #include "graphicsview.h"
 
 
-/*!
- *
- */
 class SortWidget : public QWidget
 {
     Q_OBJECT
 public:
-    /*!
-     *
-     */
     explicit SortWidget(QWidget *parent = 0);
-    /*!
-     *
-     */
-    graphicsView *view;
+    GraphicsView *view;
 
-signals:
-    
-public slots:
+protected:
+    void paintEvent(QPaintEvent *);
 
 private:
-    QLabel *resoFilter;
     QLabel *priceFilter;
     QLabel *sizeFilter;
     QLabel *typeFilter;
 
-    //QButtonGroup *resoButtonGroup;
     QButtonGroup *priceButtonGroup;
     QButtonGroup *sizeButtonGroup;
     QButtonGroup *typeButtonGroup;
 
-    /*
-        QRadioButton *anyReso;
-        QRadioButton *smallReso;
-        QRadioButton *mediumReso;
-        QRadioButton *largeReso;
-    */
     QRadioButton *anyPrice;
     QRadioButton *freePrice;
     QRadioButton *lowPrice;

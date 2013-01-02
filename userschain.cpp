@@ -12,12 +12,13 @@ void UsersChain::addUser(Users *user)
     if(usersCount == 0){
         userRoot = user;
         userLast = user;
+        user->setUserId(0);
         usersCount = 1;
     }else{
         userLast->nextUser = user;
         user->previousUser=userLast;
         userLast = user;
-        user->setId(usersCount);
+        user->setUserId(usersCount);
         usersCount++;
     }
 }
@@ -34,11 +35,11 @@ bool UsersChain::addUserAt(Users *user,int id)
         }
         user->nextUser = userTmp;
         userTmp->previousUser = user;
-        user->setId(id);
-        userTmp->setId(id+1);
+        user->setUserId(id);
+        userTmp->setUserId(id+1);
         while(userTmp->nextUser){
             userTmp = userTmp->nextUser;
-            userTmp->setId(userTmp->getId()+1);
+            userTmp->setUserId(userTmp->getUserId()+1);
         }
         ok = true;
     }else{
@@ -73,7 +74,7 @@ void UsersChain::deleteUser(Users *user)
     }
 
     while(userTmp){
-        userTmp->setId(userTmp->getId()-1);
+        userTmp->setUserId(userTmp->getUserId()-1);
         userTmp = userTmp->nextUser;
     }
 
@@ -91,7 +92,7 @@ void UsersChain::deleteUserAt(int id)
 Users *UsersChain::userAt(int id) const
 {
     Users *userTmp = userRoot;
-    while(userTmp->getId() != id){
+    while(userTmp->getUserId() != id){
         userTmp = userTmp->nextUser;
         if(!userTmp)
             return 0;

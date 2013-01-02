@@ -45,11 +45,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->centralWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    view = new graphicsView(ui->centralWidget);
+    view = new GraphicsView(ui->centralWidget);
     view->scene->imageCellChain = imageCellChain;
     view->setGeometry(0,0,1250*3/4,750);
     view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    view->installEventFilter(this);
     view->hide();
 
     sortWidget = new SortWidget(ui->centralWidget);
@@ -60,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     confWidget->setGeometry(1250*3/4,0,1250*1/4,750);
     confWidget->view = view;
     confWidget->hide();
+
 
     /*********** init dataBase/UsersChain *******************/
 
@@ -75,15 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
         database->addUserDb(adminUser);
     }
 
-
-    int imageNumLines = database->getImageNumlines();
-    if(imageNumLines != 0){
-        for(int i=0; i<imageNumLines; i++){
-            cellItem = database->getImageDb(i);
-            imageCellChain->addCellItem(cellItem);
-            view->scene->addItem(cellItem);
-        }
-    }
     /***************** Connection SLOT/SIGNAL *******************/
 
     QObject::connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -94,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(confWidget, SIGNAL(saveButton_clicked()), sortWidget, SLOT(show()));
     QObject::connect(this, SIGNAL(cellItemClicked()), confWidget , SLOT(showHistogram()));
     QObject::connect(view, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
+    QObject::connect(view, SIGNAL(cellItemClicked(CellItem *)), this, SLOT(onCellItemclicked(CellItem *)));
     QObject::connect(ui->passwordEdit, SIGNAL(returnPressed()), this, SLOT(clickEnterLogin()));
     QObject::connect(ui->userNameEdit, SIGNAL(returnPressed()), this, SLOT(clickEnterLogin()));
     QObject::connect(ui->usrCnEdit, SIGNAL(returnPressed()), this, SLOT(clickEnterRegister()));
@@ -109,6 +101,8 @@ MainWindow::~MainWindow()
 // Login CallBack
 void MainWindow::on_connectButton_clicked()
 {
+    CellItem *cellItem = 0;
+
     QString username = ui->userNameEdit->text();
     QString password = ui->passwordEdit->text();
 
@@ -128,9 +122,25 @@ void MainWindow::on_connectButton_clicked()
         currentUser = userChain->getUser(username,password);
         if(currentUser){
             ui->connectionWidget->hide();
+
+            int imageNumLines = database->getImageNumlines();
+            if(imageNumLines != 0){
+                for(int i=0; i<imageNumLines; i++){
+                    cellItem = database->getImageDb(i);
+                    if(currentUser->getPermission() == Users::LEVEL_1){
+                        imageCellChain->addCellItem(cellItem);
+                        view->scene->addItem(cellItem);
+                    }else if(cellItem->getImageCfdy() == CellItem::F){
+                        imageCellChain->addCellItem(cellItem);
+                        view->scene->addItem(cellItem);
+                    }
+                }
+            }
+
             view->adjustCellItems();
             view->show();
             sortWidget->show();
+
         }else{
             QMessageBox msgBox;
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -187,31 +197,6 @@ void MainWindow::on_submitBut_clicked(){
     }
 }
 
-// View mouse click (Left Button) event filter
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::MouseButtonDblClick)
-    {
-        if(currentUser->getPermission()==1){
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*> (event);
-            if(view->QGraphicsView::scene() == view->scene){
-                if(mouseEvent->button() == Qt::LeftButton){
-                    CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(mouseEvent->pos())));
-                    if(item!=NULL){
-                        if(view->scene->imageCellChain->contains(item)){
-                            onCellItemclicked(item);
-                        }else{
-                            CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
-                            onCellItemclicked(itemParent);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return QMainWindow::eventFilter(obj, event);
-}
-
 // Mouse click (Right Button) CallBack
 void MainWindow::showContextMenu(const QPoint &pos)
 {
@@ -224,8 +209,9 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction imagePropAction("Properties",&optionMenu);
 
     if(currentUser->getPermission()==1){
+        CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
         if(view->QGraphicsView::scene()==view->scene){
-            if(view->scene->itemAt(view->mapToScene(pos))!=NULL){
+            if(item!=NULL){
                 optionMenu.addAction(&processImageAction);
                 optionMenu.addAction(&deleteImageAction);
                 optionMenu.addAction(&insertImageAction);
@@ -234,10 +220,8 @@ void MainWindow::showContextMenu(const QPoint &pos)
                 optionMenu.addAction(&insertImageAction);
             }
 
-            QAction* selectedOption = optionMenu.exec(globalPos);
-
-            if(selectedOption == &processImageAction){
-                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+            QAction* selectedAction = optionMenu.exec(globalPos);
+            if(selectedAction == &processImageAction){
                 if(item!=NULL){
                     if(view->scene->imageCellChain->contains(item)){
                         onCellItemclicked(item);
@@ -246,7 +230,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                         onCellItemclicked(itemParent);
                     }
                 }
-            }else if(selectedOption == &deleteImageAction){
+            }else if(selectedAction == &deleteImageAction){
                 CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
                 if(item!=NULL){
                     if(view->scene->imageCellChain->contains(item)){
@@ -259,7 +243,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                     }
                     view->adjustCellItems();
                 }
-            }else if(selectedOption == &insertImageAction){
+            }else if(selectedAction == &insertImageAction){
                 QStringList fileNames;
                 QFileDialog dialog(this);
                 dialog.setFileMode(QFileDialog::ExistingFiles);
@@ -269,20 +253,22 @@ void MainWindow::showContextMenu(const QPoint &pos)
                     fileNames = dialog.selectedFiles();
                     for(int i=0; i<fileNames.count();i++){
                         fileInfo.setFile(fileNames.at(i));
-                        CellItem *cellItem = new CellItem(i,
-                                                          fileInfo.baseName(),
-                                                          fileInfo.absolutePath(),
-                                                          500,
-                                                          QPixmap(fileInfo.absoluteFilePath()));
-                        cellItem->setImageType(fileInfo.completeSuffix());
-                        imageCellChain->addCellItem(cellItem);
-                        database->addImageDb(cellItem);
-                        view->scene->addItem(cellItem);
+                        if(!imageCellChain->contains(fileInfo.baseName()) && !fileInfo.baseName().contains(" ")){
+                            CellItem *cellItem = new CellItem(imageCellChain->getCount(),
+                                                              fileInfo.baseName(),
+                                                              fileInfo.absolutePath(),
+                                                              500,
+                                                              QPixmap(fileInfo.absoluteFilePath()));
+                            cellItem->setImageType(fileInfo.completeSuffix());
+                            imageCellChain->addCellItem(cellItem);
+                            database->addImageDb(cellItem);
+                            view->scene->addItem(cellItem);
+                        }
                     }
                 view->adjustCellItems();
                 }
 
-            }else if(selectedOption == &imagePropAction){
+            }else if(selectedAction == &imagePropAction){
                 QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos));
                 CellItem *cellItem = 0;
 
@@ -313,37 +299,51 @@ void MainWindow::clickEnterRegister()
 // CellItem mouse click CallBack
 void MainWindow::onCellItemclicked(CellItem *item)
 {
-    view->scene->cellItemSelected  = item;
-    view->resize(view->parentWidget()->size().width()*3/4,view->parentWidget()->size().height());
-    view->setScene(view->sceneProcessing);
-    view->scene->removeItem(view->scene->cellItemSelected);
-    view->sceneProcessing->addItem(view->scene->cellItemSelected->image);
-    view->sceneProcessing->cellItemSelected = view->scene->cellItemSelected;
-    view->fitInView(view->scene->cellItemSelected->image,Qt::KeepAspectRatio);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if(currentUser->getPermission()==1){
+        view->scene->cellItemSelected  = item;
+        view->resize(view->parentWidget()->size().width()*3/4,view->parentWidget()->size().height());
+        view->setScene(view->sceneProcessing);
+        view->scene->removeItem(view->scene->cellItemSelected);
+        view->sceneProcessing->addItem(view->scene->cellItemSelected->image);
+        view->sceneProcessing->cellItemSelected = view->scene->cellItemSelected;
+        view->fitInView(view->scene->cellItemSelected->image,Qt::KeepAspectRatio);
+        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 
-    QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
-    confWidget->matOriginal = cv::imread(strPath.toStdString());
-    confWidget->matProcessed = cv::imread(strPath.toStdString());
+        QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
+        confWidget->matOriginal = cv::imread(strPath.toStdString());
+        confWidget->matProcessed = cv::imread(strPath.toStdString());
 
 
-    confWidget->resize(confWidget->parentWidget()->frameSize().width()*1/4,confWidget->parentWidget()->frameSize().height());
-    confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
-    confWidget->pixOriginal = item->image->pixmap();
+        confWidget->resize(confWidget->parentWidget()->frameSize().width()*1/4,confWidget->parentWidget()->frameSize().height());
+        confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
+        confWidget->pixOriginal = item->image->pixmap();
 
-    sortWidget->hide();
-    confWidget->show();
+        sortWidget->hide();
+        confWidget->show();
 
-    emit cellItemClicked();
-
+        emit cellItemClicked();
+    }
 }
 
 // Resize window event CallBack
 void MainWindow::resizeEvent(QResizeEvent*)
 {
+
+    ui->connectionWidget->setGeometry(0,0,ui->centralWidget->width(),ui->centralWidget->height());
+    ui->frame->setGeometry(ui->centralWidget->frameGeometry().center().x()-ui->frame->width()/2,
+                       ui->centralWidget->frameGeometry().center().y()-ui->frame->height()/2,
+                       ui->frame->width(),
+                       ui->frame->height());
+
     view->resize(ui->centralWidget->frameSize().width()*3/4,ui->centralWidget->frameSize().height());
+
+    sortWidget->resize(ui->centralWidget->frameSize().width()*1/4,ui->centralWidget->frameSize().height());
+    sortWidget->setGeometry(ui->centralWidget->frameSize().width() * 3/4, 0, sortWidget->size().width(), sortWidget->size().height());
+
+    confWidget->resize(ui->centralWidget->frameSize().width()*1/4,ui->centralWidget->frameSize().height());
+    confWidget->setGeometry(ui->centralWidget->frameSize().width() * 3/4,0,confWidget->size().width(), confWidget->size().height());
 
     if(!view->isHidden()){
         if(view->QGraphicsView::scene() == view->scene){
@@ -354,16 +354,6 @@ void MainWindow::resizeEvent(QResizeEvent*)
             confWidget->show();
         }
     }
-    ui->frame->setGeometry(ui->centralWidget->frameGeometry().center().x()-ui->frame->width()/2,
-                       ui->centralWidget->frameGeometry().center().y()-ui->frame->height()/2,
-                       ui->frame->width(),
-                       ui->frame->height());
-
-    sortWidget->resize(ui->centralWidget->frameSize().width()*1/4,ui->centralWidget->frameSize().height());
-    sortWidget->setGeometry(ui->centralWidget->frameSize().width() * 3/4, 0, sortWidget->size().width(), sortWidget->size().height());
-
-    confWidget->resize(ui->centralWidget->frameSize().width()*1/4,ui->centralWidget->frameSize().height());
-    confWidget->setGeometry(ui->centralWidget->frameSize().width() * 3/4,0,confWidget->size().width(), confWidget->size().height());
 
 }
 
@@ -375,6 +365,8 @@ void MainWindow::logOut()
     confWidget->hide();
     sortWidget->hide();
     ui->connectionWidget->show();
+    for(int i=imageCellChain->getCount()-1; i>=0;i--)
+        imageCellChain->deleteCellItemAt(i);
 }
 
 // About menu action callback

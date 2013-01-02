@@ -12,13 +12,14 @@ void ImageCellChain::addCellItem(CellItem *cellItem)
     if(cellItemCount == 0){
         cellItemRoot = cellItem;
         cellItemLast = cellItem;
+        cellItem->setImageId(0);
         cellItemCount = 1;
     }else{
         cellItemLast->nextCellItem = cellItem;
         cellItem->previousCellItem=cellItemLast;
         cellItem->nextCellItem = 0;
         cellItemLast = cellItem;
-        cellItem->setId(cellItemCount);
+        cellItem->setImageId(cellItemCount);
         cellItemCount++;
     }
 }
@@ -35,11 +36,11 @@ bool ImageCellChain::addCellItemAt(CellItem *cellItem, int id)
         }
         cellItem->nextCellItem = cellItemTmp;
         cellItemTmp->previousCellItem = cellItem;
-        cellItem->setId(id);
-        cellItemTmp->setId(id+1);
+        cellItem->setImageId(id);
+        cellItemTmp->setImageId(id+1);
         while(cellItemTmp->nextCellItem){
             cellItemTmp = cellItemTmp->nextCellItem;
-            cellItemTmp->setId(cellItemTmp->getId()+1);
+            cellItemTmp->setImageId(cellItemTmp->getImageId()+1);
         }
         ok = true;
     }else{
@@ -73,11 +74,12 @@ void ImageCellChain::deleteCellItem(CellItem *cellItem)
     }
 
     while(cellItemTmp){
-        cellItemTmp->setId(cellItemTmp->getId()-1);
+        cellItemTmp->setImageId(cellItemTmp->getImageId()-1);
         cellItemTmp = cellItemTmp->nextCellItem;
     }
 
     cellItemCount--;
+    delete cellItem->image;
     delete cellItem;
 }
 
@@ -102,10 +104,26 @@ bool ImageCellChain::contains(CellItem *cellItem) const
     return present;
 }
 
+bool ImageCellChain::contains(QString imageName) const
+{
+    CellItem *cellItemTmp = cellItemRoot;
+    bool present = false;
+    for(int i=0; i<cellItemCount;i++){
+        if(cellItemTmp->getImageName() == imageName){
+            present = true;
+            break;
+        }else{
+            cellItemTmp = cellItemTmp->nextCellItem;
+        }
+    }
+    return present;
+
+}
+
 CellItem *ImageCellChain::cellItemAt(int id) const
 {
     CellItem *cellItemTmp = cellItemRoot;
-    while(cellItemTmp->getId() != id){
+    while(cellItemTmp->getImageId() != id){
         cellItemTmp = cellItemTmp->nextCellItem;
         if(!cellItemTmp)
             return 0;

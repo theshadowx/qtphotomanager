@@ -64,7 +64,7 @@ SortWidget::SortWidget(QWidget *parent) :
     typeFilter->setFont(QFont(QFont().defaultFamily(),10,QFont::Bold));
     typeFilter->setGeometry(20, 320, 1250*1/4,40);
 
-    anyType = new QRadioButton("Any Type",this);
+    anyType = new QRadioButton("Any type",this);
     jpgType = new QRadioButton("JPEG",this);
     bmpType = new QRadioButton("BMP",this);
     pngType = new QRadioButton("PNG",this);
@@ -87,3 +87,12 @@ SortWidget::SortWidget(QWidget *parent) :
     typeButtonGroup->button(0)->setChecked(true);
 
 }
+
+void SortWidget::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="connectionWidget" native="true">
     <property name="enabled">
@@ -152,6 +155,24 @@
            </property>
            <item row="0" column="2">
             <widget class="QLineEdit" name="userNameEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>123</width>
+               <height>27</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>123</width>
+               <height>27</height>
+              </size>
+             </property>
              <property name="alignment">
               <set>Qt::AlignJustify|Qt::AlignVCenter</set>
              </property>
@@ -159,6 +180,24 @@
            </item>
            <item row="1" column="2">
             <widget class="QLineEdit" name="passwordEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>123</width>
+               <height>27</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>123</width>
+               <height>27</height>
+              </size>
+             </property>
              <property name="autoFillBackground">
               <bool>false</bool>
              </property>
@@ -206,7 +245,33 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
+               <width>15</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="2">
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
                <width>20</width>
+               <height>62</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="1">
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
                <height>20</height>
               </size>
              </property>
@@ -224,9 +289,12 @@
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
+               <width>70</width>
                <height>20</height>
               </size>
              </property>
@@ -234,6 +302,24 @@
            </item>
            <item>
             <widget class="QPushButton" name="connectButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>127</width>
+               <height>31</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>127</width>
+               <height>31</height>
+              </size>
+             </property>
              <property name="text">
               <string>Connect</string>
              </property>
@@ -269,7 +355,26 @@
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QLineEdit" name="usrCnEdit"/>
+          <widget class="QLineEdit" name="usrCnEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="pwCnCfLabel">
@@ -280,6 +385,24 @@
          </item>
          <item row="1" column="2">
           <widget class="QLineEdit" name="pwCnEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
            </property>
@@ -294,19 +417,30 @@
          </item>
          <item row="2" column="2">
           <widget class="QLineEdit" name="pwCfCnEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>123</width>
+             <height>27</height>
+            </size>
+           </property>
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
            </property>
           </widget>
          </item>
-         <item row="3" column="2">
-          <widget class="QPushButton" name="submitBut">
-           <property name="text">
-            <string>submit</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
+         <item row="6" column="2">
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -319,14 +453,52 @@
            </property>
           </spacer>
          </item>
-         <item row="2" column="1">
+         <item row="3" column="2">
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="2">
+          <widget class="QPushButton" name="submitBut">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>127</width>
+             <height>31</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>127</width>
+             <height>31</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Submit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
           <spacer name="horizontalSpacer_4">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>20</width>
+             <width>40</width>
              <height>20</height>
             </size>
            </property>

@@ -3,15 +3,17 @@
 CellItem::CellItem()
 {
     image = new ImageItem(this);
+    color = QColor(255, 255, 255);
     nextCellItem =0;
     previousCellItem=0;
+
+    setFlag(ItemIsSelectable,true);
 }
 
 CellItem::CellItem(int id, const QString fileName, const QString filePath, const int price, const QPixmap &pixmap,QGraphicsItem* parent, IMAGE_CONFIDENTIALITY confidentiality,IMAGE_SIZE size)
     : QGraphicsItem(parent)
 {
-
-    this->id = id;
+    imageId = id;
     imageName = fileName;
     imagePath = filePath;
     imagePrice = price;
@@ -22,11 +24,13 @@ CellItem::CellItem(int id, const QString fileName, const QString filePath, const
     nextCellItem =0;
     previousCellItem=0;
 
+    color = QColor(255, 255, 255);
+    setFlag(ItemIsSelectable,true);
 }
 
-void CellItem::setId(int id)
+void CellItem::setImageId(int id)
 {
-    this->id = id;
+    imageId = id;
 }
 
 void CellItem::setImagePrice(int price)
@@ -49,7 +53,7 @@ void CellItem::setImageName(QString name)
     imageName = name;
 }
 
-void CellItem::setImageRt(CellItem::IMAGE_CONFIDENTIALITY confidentiality)
+void CellItem::setImageCfdy(CellItem::IMAGE_CONFIDENTIALITY confidentiality)
 {
     imageCfdy = confidentiality;
 }
@@ -57,6 +61,11 @@ void CellItem::setImageRt(CellItem::IMAGE_CONFIDENTIALITY confidentiality)
 void CellItem::setImageSize(CellItem::IMAGE_SIZE size)
 {
     imageSize = size;
+}
+
+void CellItem::setColor(QColor c)
+{
+    color = c;
 }
 
 QString CellItem::getImagePath() const
@@ -89,9 +98,9 @@ int CellItem::getImagePrice() const
     return imagePrice;
 }
 
-int CellItem::getId() const
+int CellItem::getImageId() const
 {
-    return this->id;
+    return imageId;
 }
 
 QRectF CellItem::boundingRect() const
@@ -103,14 +112,11 @@ void CellItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
 {
 
     image->setPos(boundingRect().x(),boundingRect().y());
+    QRectF rect = boundingRect();
+    painter->fillRect(rect,QBrush(color));
     painter->drawText(0,121,150,20,Qt::AlignCenter,imageName);
     painter->drawText(0,141,150,20,Qt::AlignCenter, QString::number(imagePrice).append(" ").append(QString::fromUtf8("\u20AC")));
 
-}
-
-void CellItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    event->ignore();
 }
 
 QString CellItem::enumSizeToQString()

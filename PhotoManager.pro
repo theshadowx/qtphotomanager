@@ -32,11 +32,15 @@ QT += sql
 FORMS += \
     mainwindow.ui
 
-OTHER_FILES +=
+OTHER_FILES += \
+    stylesheet.qss
 
 RESOURCES += \
     image.qrc
 
+exists( !$OpenCv ) {
+       message( "Please add OpenCv to you variable environment" )
+ }
 
 unix{
     INCLUDEPATH +=/usr/local/include/

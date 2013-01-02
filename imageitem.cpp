@@ -3,11 +3,13 @@
 ImageItem::ImageItem(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
 {
+    setAcceptedMouseButtons(0);
 }
 
 ImageItem::ImageItem(const QPixmap &pixmap, QGraphicsItem *parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
+    setAcceptedMouseButtons(0);
     adjust();
 }
 

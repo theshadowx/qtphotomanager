@@ -4,8 +4,11 @@ DataBase::DataBase():QSqlDatabase()
 {
     userNumLines = 0;
     imageNumLines = 0;
-
+#ifdef Q_OS_LINUX
     homePath = QDir(QDir::homePath() + "/.photoManager");
+#else
+    homePath = QDir(QDir::homePath() + "/photoManager");
+#endif
     if(!homePath.exists())
         QDir().mkdir(homePath.path());
     QDir().setCurrent(homePath.absolutePath());
@@ -39,7 +42,7 @@ DataBase::~DataBase(){}
 void DataBase::addUserDb(Users* user)
 {
     QTextStream outStream(&userDbFile);
-    outStream << QString("%1").arg(user->getId()) + " " + user->getUsername() + " " + user->getPassword() + " " + QString("%1").arg(user->getPermission()) << endl;
+    outStream << QString("%1").arg(user->getUserId()) + " " + user->getUsername() + " " + user->getPassword() + " " + QString("%1").arg(user->getPermission()) << endl;
     userNumLines++;
 }
 
@@ -56,7 +59,7 @@ Users* DataBase::getUserDb(int id)
     }
 
     Users *user = new Users();
-    user->setId(line.at(0).toInt());
+    user->setUserId(line.at(0).toInt());
     user->setUsername(line.at(1));
     user->setPassword(line.at(2));
     user->setPermission((Users::USER_PERMISSION)QString(line.at(3)).toInt());
@@ -119,7 +122,7 @@ bool DataBase::deleteUserDb(QString username)
 void DataBase::addImageDb(CellItem* cellItem)
 {
     QTextStream outStream(&imageDbFile);
-    outStream << QString("%1").arg(cellItem->getId()) + " " +
+    outStream << QString("%1").arg(cellItem->getImageId()) + " " +
                  cellItem->getImageName() + " " +
                  cellItem->getImagePath() + " " +
                  cellItem->getImageType() + " " +
@@ -142,12 +145,12 @@ CellItem* DataBase::getImageDb(int id)
     }
 
     CellItem *cellItem = new CellItem();
-    cellItem->setId(line.at(0).toInt());
+    cellItem->setImageId(line.at(0).toInt());
     cellItem->setImageName(line.at(1));
     cellItem->setImagePath(line.at(2));
     cellItem->setImageType(line.at(3));
     cellItem->setImagePrice(line.at(4).toInt());
-    cellItem->setImageRt((CellItem::IMAGE_CONFIDENTIALITY)QString(line.at(5)).toInt());
+    cellItem->setImageCfdy((CellItem::IMAGE_CONFIDENTIALITY)QString(line.at(5)).toInt());
     cellItem->setImageSize((CellItem::IMAGE_SIZE)QString(line.at(6)).toInt());
     cellItem->image->setPixmap(QPixmap(cellItem->getImagePath() + QDir().separator() + cellItem->getImageName() + "." + cellItem->getImageType()));
     cellItem->image->adjust();
@@ -186,10 +189,10 @@ bool DataBase::deleteImageDb(QString imageName)
         for(int i=0; i<imageNumLines+1; i++){
             if(i < imageLine){
                 line = inStream.readLine().split(" ");
-                tmpInStream << line.at(0)  << " "  << line.at(1)  << " "  << line.at(2)  << " "  << line.at(3) << " "  << line.at(4) << " "  << line.at(5) << endl;
+                tmpInStream << line.at(0)  << " "  << line.at(1)  << " "  << line.at(2)  << " "  << line.at(3) << " "  << line.at(4) << " "  << line.at(5) << " "  << line.at(6) << endl;
             }else if(i > imageLine){
                 line = inStream.readLine().split(" ");
-                tmpInStream << QString().setNum(line.at(0).toInt()-1)  << " "  << line.at(1)  << " "  << line.at(2)  << " "  << line.at(3) << " "  << line.at(4) << " "  << line.at(5) << endl;
+                tmpInStream << QString().setNum(line.at(0).toInt()-1)  << " "  << line.at(1)  << " "  << line.at(2)  << " "  << line.at(3) << " "  << line.at(4) << " "  << line.at(5) << " "  << line.at(6) << endl;
             }else{
                 inStream.readLine();
             }

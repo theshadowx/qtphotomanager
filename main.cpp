@@ -5,14 +5,20 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-/*
-    if (!createConnection())
-        return 1;
-*/
+
+    QFile qss("/home/theshadowx7/workspace/Project_QT/PhotoManager/stylesheet.qss");
+    qss.open(QFile::ReadOnly);
+    a.setStyleSheet(qss.readAll());
+    qss.close();
+
     MainWindow w;
     w.setWindowTitle("PhotoManager (beta)");
     w.show();
 
     return a.exec();
 }
+
+
+
+
 

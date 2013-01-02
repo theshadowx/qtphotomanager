@@ -2,7 +2,6 @@
 #define DIALOGPROPERTIES_H
 
 #include <QWidget>
-
 #include <QtGui>
 #include <QtCore>
 #include <QDialog>
@@ -14,9 +13,10 @@ class DialogProperties: public QDialog
 public:
     DialogProperties(CellItem *cellItem,QWidget *parent = 0);
     ~DialogProperties();
-    CellItem *currentCellItem;
 
     void updateData();
+
+    CellItem *currentCellItem;
 
 private:
     QDialogButtonBox *buttonBox;
@@ -26,6 +26,8 @@ private:
 
     QTabWidget *tabWidget;
     QWidget *pageGeneral;
+    QWidget *pageModification;
+
     QLabel *nameLabel;
     QLabel *widthLabel;
     QLabel *heightLabel;

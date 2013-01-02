@@ -7,32 +7,15 @@
 #include "imagecellchain.h"
 
 
-class graphicsScene : public QGraphicsScene
+class GraphicsScene : public QGraphicsScene
 {
 
 public:
-    /*!
-     *
-     */
-    graphicsScene(QObject *parent);
-    /*!
-     *
-     */
+    GraphicsScene(QObject *parent = 0);
+
     ImageCellChain *imageCellChain;
-    /*!
-     *
-     */
     CellItem *cellItemSelected;
 
-protected:
-    /*!
-     *
-     */
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    /*!
-     *
-     */
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
  
 #endif // GRAPHICSSCENE_H

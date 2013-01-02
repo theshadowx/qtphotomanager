@@ -3,19 +3,10 @@
 #include "cellitem.h"
 
 
-graphicsScene::graphicsScene(QObject *parent = 0)
+GraphicsScene::GraphicsScene(QObject *parent)
     : QGraphicsScene(parent)
 {
-}
-
-void graphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
+    imageCellChain = 0;
+    cellItemSelected = 0;
 
 }
-
-void graphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-
-    QGraphicsScene::mouseReleaseEvent(event);
-}
-

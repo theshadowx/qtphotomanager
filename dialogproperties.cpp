@@ -33,8 +33,12 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     /********* Tab Widget *************/
     tabWidget = new QTabWidget(this);
     tabWidget->setGeometry(10,10,415,220);
+
     pageGeneral = new QWidget(tabWidget);
+    pageModification = new QWidget(tabWidget);
+
     tabWidget->addTab(pageGeneral,"General");
+    tabWidget->addTab(pageModification,"Modification");
 
     /*********** Label ******************/
     nameLabel = new QLabel("Name :",pageGeneral);
@@ -47,15 +51,15 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     cfdyLabel = new QLabel("Cfdy :",pageGeneral);
     pathLabel = new QLabel("Path :",pageGeneral);
 
-    nameLabel->setGeometry(150,5,50,20);
-    widthLabel->setGeometry(150,25,50,20);
-    heightLabel->setGeometry(150,45,50,20);
-    typeLabel->setGeometry(150,65,50,20);
-    sizeLabel->setGeometry(150,85,50,20);
-    weightLabel->setGeometry(150,105,50,20);
-    priceLabel->setGeometry(150,125,50,20);
-    cfdyLabel->setGeometry(150,145,50,20);
-    pathLabel->setGeometry(150,165,50,20);
+    nameLabel->setGeometry(150,5,55,20);
+    widthLabel->setGeometry(150,25,55,20);
+    heightLabel->setGeometry(150,45,55,20);
+    typeLabel->setGeometry(150,65,55,20);
+    sizeLabel->setGeometry(150,85,55,20);
+    weightLabel->setGeometry(150,105,55,20);
+    priceLabel->setGeometry(150,125,55,20);
+    cfdyLabel->setGeometry(150,145,55,20);
+    pathLabel->setGeometry(150,165,55,20);
 
     nameLabel->setFont(QFont(QFont().defaultFamily(),10,QFont::Bold));
     widthLabel->setFont(QFont(QFont().defaultFamily(),10,QFont::Bold));
@@ -74,7 +78,11 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     heightData = new QLabel(QString("%1 pixels").arg(currentCellItem->image->pixmap().height()),pageGeneral);
     typeData = new QLabel(QString("%1").arg(currentCellItem->getImageType()),pageGeneral);
     sizeData = new QLabel(currentCellItem->enumSizeToQString(),pageGeneral);
-    weightData = new QLabel(QString("%1 Bytes").arg(QFile(QString("%1").arg(currentCellItem->getImagePath()+QDir().separator()+currentCellItem->getImageName()+"."+currentCellItem->getImageType())).size()),pageGeneral);
+    weightData = new QLabel(QString("%1 Bytes").arg(QFile(QString("%1").arg(currentCellItem->getImagePath()+
+                                                                            QDir().separator()+
+                                                                            currentCellItem->getImageName()+
+                                                                            "."+
+                                                                            currentCellItem->getImageType())).size()),pageGeneral);
     priceData = new QLabel(QString("%1").arg(currentCellItem->getImagePrice()).append(QString::fromUtf8(" \u20AC")),pageGeneral);
     cfdyData = new QLabel(currentCellItem->enumCfdyToQString(),pageGeneral);
     pathData = new QLabel(QString("%1").arg(currentCellItem->getImagePath()),pageGeneral);
@@ -127,7 +135,10 @@ void DialogProperties::updateData()
     heightData->setText(QString("%1 pixels").arg(currentCellItem->image->pixmap().height()));
     typeData->setText(QString("%1").arg(currentCellItem->getImageType()));
     sizeData->setText(currentCellItem->enumSizeToQString());
-    weightData->setText(QString("%1 Bytes").arg(QFile(QString("%1").arg(currentCellItem->getImagePath()+QDir().separator()+currentCellItem->getImageName()+"."+currentCellItem->getImageType())).size()));
+    weightData->setText(QString("%1 Bytes").arg(QFile(QString("%1").arg(currentCellItem->getImagePath()+
+                                                                        QDir().separator()+currentCellItem->getImageName()+
+                                                                        "."+
+                                                                        currentCellItem->getImageType())).size()));
     priceData->setText(QString("%1").arg(currentCellItem->getImagePrice()).append(QString::fromUtf8(" \u20AC")));
     cfdyData->setText(currentCellItem->enumCfdyToQString());
     pathData->setText(QString("%1").arg(currentCellItem->getImagePath()));
