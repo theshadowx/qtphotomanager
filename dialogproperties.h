@@ -26,7 +26,6 @@ private:
 
     QTabWidget *tabWidget;
     QWidget *pageGeneral;
-    QWidget *pageModification;
 
     QLabel *nameLabel;
     QLabel *widthLabel;

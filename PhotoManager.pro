@@ -11,7 +11,9 @@ SOURCES += \
     users.cpp \
     userschain.cpp \
     imagecellchain.cpp \
-    dialogproperties.cpp
+    dialogproperties.cpp \
+    databasewidget.cpp \
+    comboboxdelegate.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -25,7 +27,9 @@ HEADERS += \
     users.h \
     userschain.h \
     imagecellchain.h \
-    dialogproperties.h
+    dialogproperties.h \
+    databasewidget.h \
+    comboboxdelegate.h
 
 QT += sql
 

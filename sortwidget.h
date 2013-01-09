@@ -12,6 +12,8 @@ class SortWidget : public QWidget
     Q_OBJECT
 public:
     explicit SortWidget(QWidget *parent = 0);
+    virtual ~SortWidget();
+
     GraphicsView *view;
 
 protected:
@@ -43,7 +45,6 @@ private:
     QRadioButton *pngType;
     QRadioButton *otherType;
 
-    
 };
 
 #endif // SORTWIDGET_H

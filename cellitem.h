@@ -20,6 +20,8 @@ public:
              IMAGE_CONFIDENTIALITY confidentiality = R,
              IMAGE_SIZE size = MEDIUM);
 
+    virtual ~CellItem();
+
     void setImageId(int id);
     void setImagePrice(int price);
     void setImageType(QString type);

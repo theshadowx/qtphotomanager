@@ -1,12 +1,20 @@
 #include "imagecellchain.h"
 
-ImageCellChain::ImageCellChain()
+/// Constructor of ImageCellChain
+ImageCellChain::ImageCellChain(QObject *parent)
+    :QObject(parent)
 {
     cellItemCount = 0;
     cellItemRoot = 0;
     cellItemLast = 0;
 }
 
+/// Destructor of ImageCellChain
+ImageCellChain::~ImageCellChain()
+{
+}
+
+/// Add a CellItem to the chained list
 void ImageCellChain::addCellItem(CellItem *cellItem)
 {
     if(cellItemCount == 0){
@@ -24,6 +32,7 @@ void ImageCellChain::addCellItem(CellItem *cellItem)
     }
 }
 
+/// Add a CellItem to the chained list at the position id;
 bool ImageCellChain::addCellItemAt(CellItem *cellItem, int id)
 {
     bool ok = false;
@@ -49,6 +58,7 @@ bool ImageCellChain::addCellItemAt(CellItem *cellItem, int id)
     return ok;
 }
 
+/// Delete a CellItem from the Chained list
 void ImageCellChain::deleteCellItem(CellItem *cellItem)
 {
     CellItem *cellItemTmp;
@@ -83,12 +93,14 @@ void ImageCellChain::deleteCellItem(CellItem *cellItem)
     delete cellItem;
 }
 
+/// Delete a CellItem that has index id from the chained list
 void ImageCellChain::deleteCellItemAt(int id)
 {
     CellItem *cellItemTmp = cellItemAt(id);
     this->deleteCellItem(cellItemTmp);
 }
 
+/// Check whether the chained list contain a CellItem
 bool ImageCellChain::contains(CellItem *cellItem) const
 {
     CellItem *cellItemTmp = cellItemRoot;
@@ -104,6 +116,7 @@ bool ImageCellChain::contains(CellItem *cellItem) const
     return present;
 }
 
+/// Check whether the chained list contain a CellItem which its name is imageName
 bool ImageCellChain::contains(QString imageName) const
 {
     CellItem *cellItemTmp = cellItemRoot;
@@ -120,6 +133,7 @@ bool ImageCellChain::contains(QString imageName) const
 
 }
 
+/// Get a CellItem from the chained list that has index id
 CellItem *ImageCellChain::cellItemAt(int id) const
 {
     CellItem *cellItemTmp = cellItemRoot;
@@ -131,7 +145,24 @@ CellItem *ImageCellChain::cellItemAt(int id) const
     return cellItemTmp;
 }
 
+/// Get the number of element in the chained list
 int ImageCellChain::getCount() const
 {
     return cellItemCount;
+}
+
+void ImageCellChain::update(DataBase *database)
+{
+    for(int i=cellItemCount-1; i>=0;i--)
+        this->deleteCellItemAt(i);
+
+    int imageNumLines = database->getImageNumlines();
+    CellItem *cellItem = 0;
+
+    for(int i=0; i<imageNumLines; i++){
+        cellItem = database->getImageDb(i);
+        this->addCellItem(cellItem);
+    }
+
+    emit updated();
 }

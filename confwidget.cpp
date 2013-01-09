@@ -1,6 +1,7 @@
 #include "confwidget.h"
 #include "graphicsview.h"
 
+/// Constructor of ConfWidget
 ConfWidget::ConfWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -28,17 +29,7 @@ ConfWidget::ConfWidget(QWidget *parent) :
     brightnessLabel->setGeometry(5, 220, 80, 20);
     contrastSlider->setGeometry(90, 245, 1250 * 1/6, 20);
     contrastLabel->setGeometry(5, 245, 80, 20);
-/*
-    saveButton->setGeometry(1250 * 1/16,
-                            750 * 3/4,
-                            saveButton->size().width(),
-                            saveButton->size().height());
 
-    cancelButton->setGeometry(1250 * 1/16 + 20 + saveButton->size().width(),
-                              750 * 3/4,
-                              cancelButton->size().width(),
-                              cancelButton->size().height());
-*/
     histView->setScene(scene);
     histView->scene()->addItem(histPixmap);
     histPixmap->setPos(histView->mapToScene(0, 0));
@@ -63,11 +54,14 @@ ConfWidget::ConfWidget(QWidget *parent) :
 
 }
 
+/// Destructor of the widget
+ConfWidget::~ConfWidget()
+{
+}
 
-
+/// Brightness and contrast callback
 void ConfWidget::brightnessContrast()
 {
-//#ifdef Q_OS_LINUX
     float alpha = ((float) contrastSlider->value())/30;
     float beta = brightnessSlider->value();
 
@@ -91,14 +85,11 @@ void ConfWidget::brightnessContrast()
         this->showHistogram();
     }
 
-//#endif
-
 }
 
+/// Calculate the histogram of the image
 void ConfWidget::showHistogram()
 {
-
-//#ifdef Q_OS_LINUX
     /// Separate the image in 3 places ( B, G and R )
     cv::vector<cv::Mat> bgr_planes;
     cv::split(matProcessed, bgr_planes);
@@ -128,7 +119,6 @@ void ConfWidget::showHistogram()
     int bin_w = cvRound((double) hist_w/histSize );
 
     cv::Mat histImage( hist_h, hist_w, CV_8UC3, cv::Scalar( 255,255,255) );
-    //cv::Mat histImageRGB( hist_h, hist_w, CV_8UC3, cv::Scalar( 255,255,255) );
 
     /// Normalize the result to [ 0, histImage.rows ]
     cv::normalize(b_hist, b_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat() );
@@ -149,19 +139,13 @@ void ConfWidget::showHistogram()
                   cv::Scalar( 0, 0, 255), 2, 8, 0);
     }
 
-    //cv::namedWindow("calcHist Demo", CV_WINDOW_NORMAL);
-    //cv::imshow("calcHist Demo", histImage );
-
-    //cv::cvtColor(histImage,histImageRGB,CV_BGR2RGB);
-
     QImage imageTmp(histImage.data, histImage.cols,histImage.rows,histImage.step,QImage::Format_RGB666);
     histPixmap->setPixmap(QPixmap().fromImage(imageTmp));
     histPixmap->setPos(histView->mapToScene(0, 0));
     histView->fitInView(histPixmap,Qt::KeepAspectRatio);
-//#endif
-
 }
 
+/// Cancel button pressed callback
 void ConfWidget::on_cancelButton_clicked()
 {
 
@@ -182,13 +166,14 @@ void ConfWidget::on_cancelButton_clicked()
 
     view->adjustCellItems();
 
-    emit cancelButton_clicked();
+    emit cancelButtonClicked();
     this->hide();
 
     brightnessSlider->setValue(0);
     contrastSlider->setValue(30);
 }
 
+/// Save button pressed callback
 void ConfWidget::on_saveButton_clicked()
 {
     qreal scaleFactor = view->transform().m11();
@@ -208,36 +193,32 @@ void ConfWidget::on_saveButton_clicked()
 
     view->adjustCellItems();
 
-    emit saveButton_clicked();
+    emit saveButtonClicked();
     this->hide();
 
     brightnessSlider->setValue(0);
     contrastSlider->setValue(30);
 }
 
-
+/// Resize event callback
 void ConfWidget::resizeEvent(QResizeEvent*)
 {
- /*
-    saveButton->setGeometry(this->size().width() * 1/4,this->size().height() * 3/4,
-                            saveButton->size().width(),saveButton->size().height());
-
-    cancelButton->setGeometry(size().width() * 1/4 + saveButton->size().width() + 20, size().height() * 3/4,
-                              cancelButton->size().width(),cancelButton->size().height());
-*/
-
     histView->setGeometry(5,20,this->parentWidget()->frameSize().width()*1/4 - 10,200);
     histView->setSceneRect(histView->geometry());
     histPixmap->setPos(histView->mapToScene(0, 0));
-    histView->fitInView(histPixmap,Qt::KeepAspectRatio);
-
 
     brightnessSlider->setGeometry(90, 220, this->parentWidget()->frameSize().width() * 1/6, 20);
     brightnessLabel->setGeometry(5, 220, 80, 20);
     contrastSlider->setGeometry(90, 245, this->parentWidget()->frameSize().width() * 1/6, 20);
     contrastLabel->setGeometry(5, 245, 80, 20);
+
+    bool sceneEmpty =  (view->sceneProcessing->items().isEmpty());
+    if(!sceneEmpty){
+        this->showHistogram();
+    }
 }
 
+/// Paint event callBack
 void ConfWidget::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;

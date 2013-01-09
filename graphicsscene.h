@@ -11,7 +11,9 @@ class GraphicsScene : public QGraphicsScene
 {
 
 public:
-    GraphicsScene(QObject *parent = 0);
+    explicit GraphicsScene(QObject *parent = 0);
+    virtual ~GraphicsScene();
+
 
     ImageCellChain *imageCellChain;
     CellItem *cellItemSelected;

@@ -1,5 +1,6 @@
 #include "sortwidget.h"
 
+/// Constructor of SortWidget
 SortWidget::SortWidget(QWidget *parent) :
     QWidget(parent)
 {
@@ -88,6 +89,11 @@ SortWidget::SortWidget(QWidget *parent) :
 
 }
 
+SortWidget::~SortWidget()
+{
+}
+
+/// Pain event callback
 void SortWidget::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;

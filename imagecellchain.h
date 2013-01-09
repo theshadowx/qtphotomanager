@@ -2,11 +2,14 @@
 #define IMAGECELLCHAIN_H
 
 #include "cellitem.h"
+#include "database.h"
 
-class ImageCellChain
+class ImageCellChain: public QObject
 {
+    Q_OBJECT
 public:
-    ImageCellChain();
+    explicit ImageCellChain(QObject *parent=0);
+    virtual ~ImageCellChain();
 
     void addCellItem(CellItem *cellItem);
     bool addCellItemAt(CellItem *cellItem,int id);
@@ -23,6 +26,12 @@ private:
     int cellItemCount;
     CellItem *cellItemRoot;
     CellItem *cellItemLast;
+
+public slots:
+    void update(DataBase *database);
+
+signals:
+    void updated();
 };
 
 #endif // IMAGECELLCHAIN_H

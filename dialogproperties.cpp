@@ -1,5 +1,6 @@
 #include "dialogproperties.h"
 
+/// Constructor of DialogProperties
 DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     :QDialog(parent)
 {
@@ -8,7 +9,7 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
 
     currentCellItem = cellItem;
 
-    /********* Push Buttons *************/
+    /// ********* Push Buttons ************* ///
     buttonBox = new QDialogButtonBox(this);
 
     previousImageButton = new QPushButton("Previous",buttonBox);
@@ -23,6 +24,12 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     nextImageButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+#ifdef Q_OS_LINUX
+    nextImageButton->setIcon(QIcon().fromTheme("forward"));
+    previousImageButton->setIcon(QIcon().fromTheme("back"));
+    closeButton->setIcon(QIcon().fromTheme("gtk-close"));
+#endif
+
     buttonBox->addButton(closeButton,QDialogButtonBox::ApplyRole);
     buttonBox->addButton(nextImageButton,QDialogButtonBox::ApplyRole);
     buttonBox->addButton(previousImageButton,QDialogButtonBox::ApplyRole);
@@ -30,17 +37,13 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
 
     buttonBox->setGeometry(0,240,400,35);
 
-    /********* Tab Widget *************/
+    /// ********* Tab Widget ************* ///
     tabWidget = new QTabWidget(this);
     tabWidget->setGeometry(10,10,415,220);
-
     pageGeneral = new QWidget(tabWidget);
-    pageModification = new QWidget(tabWidget);
-
     tabWidget->addTab(pageGeneral,"General");
-    tabWidget->addTab(pageModification,"Modification");
 
-    /*********** Label ******************/
+    /// *********** Label ****************** ///
     nameLabel = new QLabel("Name :",pageGeneral);
     widthLabel = new QLabel("Width :",pageGeneral);
     heightLabel = new QLabel("Height :",pageGeneral);
@@ -72,7 +75,7 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     pathLabel->setFont(QFont(QFont().defaultFamily(),10,QFont::Bold));
 
 
-    /*********** Data ******************/
+    /// *********** Data ****************** ///
     nameData = new QLabel(QString("%1").arg(currentCellItem->getImageName()),pageGeneral);
     widthData = new QLabel(QString("%1 pixels").arg(currentCellItem->image->pixmap().width()),pageGeneral);
     heightData = new QLabel(QString("%1 pixels").arg(currentCellItem->image->pixmap().height()),pageGeneral);
@@ -97,7 +100,7 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     cfdyData->setGeometry(210,145,225,20);
     pathData->setGeometry(210,165,225,20);
 
-    /********** Image ********************/
+    /// ********** Image ******************** ///
 
     QGraphicsScene *imageScene = new QGraphicsScene();
 
@@ -111,12 +114,14 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
     image->adjust(118,118);
     imageView->scene()->addItem(image);
 
+    /// ********* Button availability ****** ///
+
     if(currentCellItem->nextCellItem == 0)
         nextImageButton->setDisabled(true);
     if(currentCellItem->previousCellItem == 0)
         previousImageButton->setDisabled(true);
 
-    /********** Signals/Slots **************/
+    /// ******** Signals/Slots ************ ///
 
     this->connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
     this->connect(previousImageButton, SIGNAL(clicked()), this, SLOT(onPreviousImageClicked()));
@@ -124,10 +129,12 @@ DialogProperties::DialogProperties(CellItem *cellItem, QWidget *parent)
 
 }
 
+/// Destructor of DialogProperties
 DialogProperties::~DialogProperties()
 {
 }
 
+/// Update data shown in the dialog window
 void DialogProperties::updateData()
 {
     nameData->setText(QString("%1").arg(currentCellItem->getImageName()));
@@ -144,9 +151,9 @@ void DialogProperties::updateData()
     pathData->setText(QString("%1").arg(currentCellItem->getImagePath()));
     image->setPixmap(currentCellItem->image->pixmap());
     image->adjust(118,118);
-
 }
 
+/// Previous button click callback
 void DialogProperties::onPreviousImageClicked()
 {
     if(currentCellItem->previousCellItem != 0){
@@ -160,6 +167,7 @@ void DialogProperties::onPreviousImageClicked()
     this->updateData();
 }
 
+/// Next button click callback
 void DialogProperties::onNextImageClicked()
 {
     if(currentCellItem->nextCellItem != 0 ){

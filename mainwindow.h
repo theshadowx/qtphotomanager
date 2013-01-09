@@ -5,9 +5,9 @@
 #include <QtGui>
 #include <QtCore>
 #include "graphicsview.h"
-#include "database.h"
 #include "confwidget.h"
 #include "sortwidget.h"
+#include "databasewidget.h"
 #include "userschain.h"
 #include "imagecellchain.h"
 #include "dialogproperties.h"
@@ -15,7 +15,6 @@
 namespace Ui {
 class MainWindow;
 }
-
 
 class MainWindow : public QMainWindow
 {
@@ -29,7 +28,7 @@ public:
     /*!
      * Destroys the main window.
      */
-    ~MainWindow();
+    virtual ~MainWindow();
 
 
 protected:
@@ -45,11 +44,14 @@ private:
     QMenu          *fileMenu;
     QMenu          *editMenu;
     QMenu          *helpMenu;
+    QMenu          *adminMenu;
 
     QAction        *logoutAct;
     QAction        *quitAct;
     QAction        *aboutAct;
     QAction        *aboutQtAct;
+    QAction        *userDBAct;
+    QAction        *imageDBAct;
 
     QMenuBar       *menuBar;
     QStatusBar     *statusBar;
@@ -62,6 +64,9 @@ private:
     UsersChain      *userChain;
     ImageCellChain  *imageCellChain;
     DataBase        *database;
+    DatabaseWidget  *databaseWidget;
+
+    int             nbTries;
 
 
 signals:

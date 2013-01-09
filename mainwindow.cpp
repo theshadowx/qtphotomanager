@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
+/// Constructor of MainWindow
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -10,38 +10,42 @@ MainWindow::MainWindow(QWidget *parent) :
     imageCellChain = new ImageCellChain();
     database = new DataBase();
 
+    nbTries = 0;
     currentUser = 0;
 
     Users *user = 0;
-    CellItem *cellItem = 0;
 
-    /***************** init interface *******************/
-
+    /** *************** init interface ***************** **/
     ui->setupUi(this);
 
-    menuBar     = new QMenuBar(this);
-    quitAct     = new QAction("&Quit", this);
-    logoutAct   = new QAction("&Log Out",this);
-    aboutAct    = new QAction("A&bout", this);
-    aboutQtAct  = new QAction("Abo&ut Qt", this);
+    menuBar = new QMenuBar(this);
+    this->setMenuBar(menuBar);
+
+    fileMenu = menuBar->addMenu(tr("&File"));
+    quitAct = new QAction("&Quit", fileMenu);
+    logoutAct = new QAction("&Log Out",fileMenu);
+    fileMenu->addAction(logoutAct);
+    fileMenu->addAction(quitAct);
+
+    editMenu = menuBar->addMenu("&Edit");
+
+    helpMenu = menuBar->addMenu("&Help");
+    aboutAct = new QAction("A&bout", helpMenu);
+    aboutQtAct = new QAction("Abo&ut Qt", helpMenu);
+    helpMenu->addAction(aboutAct);
+    helpMenu->addAction(aboutQtAct);
+
+    adminMenu = menuBar->addMenu("&Admin");
+    userDBAct = new QAction("user DataBase",adminMenu);
+    imageDBAct = new QAction("image DataBase",adminMenu);
+    adminMenu->addAction(userDBAct);
+    adminMenu->addAction(imageDBAct);
+    adminMenu->menuAction()->setVisible(false);
 
     aboutAct->setShortcut(Qt::CTRL + Qt::Key_B);
     aboutQtAct->setShortcut(Qt::CTRL + Qt::Key_U);
     quitAct->setShortcut(Qt::CTRL+Qt::Key_Q);
     logoutAct->setShortcut(Qt::CTRL+Qt::Key_L);
-
-
-    fileMenu = menuBar->addMenu(tr("&File"));
-    fileMenu->addAction(logoutAct);
-    fileMenu->addAction(quitAct);
-
-    editMenu = menuBar->addMenu(tr("&Edit"));
-
-    helpMenu = menuBar->addMenu(tr("&Help"));
-    helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
-
-    this->setMenuBar(menuBar);
 
     ui->centralWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -60,8 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
     confWidget->view = view;
     confWidget->hide();
 
-
-    /*********** init dataBase/UsersChain *******************/
+    /** ********* init dataBase/UsersChain ***************** **/
 
     int userNumLines = database->getUserNumlines();
     if(userNumLines != 0){
@@ -75,14 +78,25 @@ MainWindow::MainWindow(QWidget *parent) :
         database->addUserDb(adminUser);
     }
 
-    /***************** Connection SLOT/SIGNAL *******************/
+    databaseWidget = new DatabaseWidget(database, ui->centralWidget);
+    databaseWidget->setGeometry(0,0,1250,750);
+    databaseWidget->hide();
+
+    /** *************** Connection SLOT/SIGNAL ***************** **/
 
     QObject::connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
     QObject::connect(quitAct, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(logoutAct, SIGNAL(triggered()), this, SLOT(logOut()));
-    QObject::connect(confWidget, SIGNAL(cancelButton_clicked()), sortWidget, SLOT(show()));
-    QObject::connect(confWidget, SIGNAL(saveButton_clicked()), sortWidget, SLOT(show()));
+    QObject::connect(userDBAct, SIGNAL(triggered()), databaseWidget, SLOT(showUserDb()));
+    QObject::connect(imageDBAct, SIGNAL(triggered()), databaseWidget, SLOT(showImageDb()));
+    QObject::connect(confWidget, SIGNAL(cancelButtonClicked()), sortWidget, SLOT(show()));
+    QObject::connect(confWidget, SIGNAL(saveButtonClicked()), sortWidget, SLOT(show()));
+    QObject::connect(databaseWidget, SIGNAL(cancelButtonClicked()), sortWidget, SLOT(show()));
+    QObject::connect(databaseWidget, SIGNAL(saveButtonClicked()), sortWidget, SLOT(show()));
+    QObject::connect(databaseWidget, SIGNAL(imageDbChanged(DataBase*)), imageCellChain, SLOT(update(DataBase*)));
+    QObject::connect(databaseWidget, SIGNAL(userDbChanged(DataBase*)), userChain, SLOT(update(DataBase*)));
+    QObject::connect(imageCellChain, SIGNAL(updated()), view, SLOT(updateScene()));
     QObject::connect(this, SIGNAL(cellItemClicked()), confWidget , SLOT(showHistogram()));
     QObject::connect(view, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
     QObject::connect(view, SIGNAL(cellItemClicked(CellItem *)), this, SLOT(onCellItemclicked(CellItem *)));
@@ -93,12 +107,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->pwCfCnEdit, SIGNAL(returnPressed()), this, SLOT(clickEnterRegister()));
 }
 
+/// Destructor of MainWindow
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-// Login CallBack
+/// Login callBack
 void MainWindow::on_connectButton_clicked()
 {
     CellItem *cellItem = 0;
@@ -121,10 +136,12 @@ void MainWindow::on_connectButton_clicked()
     }else{
         currentUser = userChain->getUser(username,password);
         if(currentUser){
-            ui->connectionWidget->hide();
+            nbTries = 3;
+            view->currentUser = currentUser;
+            if(currentUser->getPermission() != Users::LEVEL_3){
+                ui->connectionWidget->hide();
+                int imageNumLines = database->getImageNumlines();
 
-            int imageNumLines = database->getImageNumlines();
-            if(imageNumLines != 0){
                 for(int i=0; i<imageNumLines; i++){
                     cellItem = database->getImageDb(i);
                     if(currentUser->getPermission() == Users::LEVEL_1){
@@ -135,26 +152,47 @@ void MainWindow::on_connectButton_clicked()
                         view->scene->addItem(cellItem);
                     }
                 }
+
+                if(currentUser->getUsername() == "admin"){
+                    adminMenu->menuAction()->setVisible(true);
+                }
+
+                view->adjustCellItems();
+                view->show();
+                sortWidget->show();
+            }else{
+                QMessageBox msgBox;
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setText("Your account has not been activated yet");
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.exec();
             }
-
-            view->adjustCellItems();
-            view->show();
-            sortWidget->show();
-
         }else{
-            QMessageBox msgBox;
-            msgBox.setStandardButtons(QMessageBox::Ok);
-            msgBox.setText("Username or Password is wrong, please retry.");
-            msgBox.setIcon(QMessageBox::Critical);
-            msgBox.exec();
-            this->activateWindow();
-            ui->userNameEdit->setFocus();
+            nbTries ++;
+            if(nbTries < 3){
+                QMessageBox msgBox;
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setText("Username or Password is wrong, please retry.");
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.exec();
+                this->activateWindow();
+                ui->userNameEdit->setFocus();
+            }else{
+                ui->passwordEdit->setDisabled(true);
+                ui->userNameEdit->setDisabled(true);
+                ui->connectButton->setDisabled(true);
+            }
         }
     }
-
 }
 
-// Register CallBack
+/// Enter pressed callback (login fields)
+void MainWindow::clickEnterLogin()
+{
+    on_connectButton_clicked();
+}
+
+/// Register callBack
 void MainWindow::on_submitBut_clicked(){
     QString username = ui->usrCnEdit->text();
     QString password = ui->pwCnEdit->text();
@@ -182,22 +220,24 @@ void MainWindow::on_submitBut_clicked(){
         ui->usrCnEdit->setFocus();
         return;
     }else{
-        Users *user = new Users(username,password,Users::LEVEL_2);
+        Users *user = new Users(username,password,Users::LEVEL_3);
         userChain->addUser(user);
         database->addUserDb(user);
         currentUser = user;
-        view->adjustCellItems();
-        view->show();
-        sortWidget->show();
-        ui->connectionWidget->hide();
-        msgBox.setText("User added");
+        msgBox.setText("Your account will be active after the Validation Service validate it");
         msgBox.setIcon(QMessageBox::Information);
         msgBox.exec();
         this->activateWindow();
     }
 }
 
-// Mouse click (Right Button) CallBack
+/// Enter pressed callback (registering fields)
+void MainWindow::clickEnterRegister()
+{
+    on_submitBut_clicked();
+}
+
+/// Mouse click (Right Button) callBack
 void MainWindow::showContextMenu(const QPoint &pos)
 {
     QPoint globalPos = view->mapToGlobal(pos);
@@ -208,9 +248,9 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction insertImageAction("insert an image",&optionMenu);
     QAction imagePropAction("Properties",&optionMenu);
 
-    if(currentUser->getPermission()==1){
+    if(currentUser->getPermission() == Users::LEVEL_1){
         CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
-        if(view->QGraphicsView::scene()==view->scene){
+        if(view->QGraphicsView::scene() == view->scene){
             if(item!=NULL){
                 optionMenu.addAction(&processImageAction);
                 optionMenu.addAction(&deleteImageAction);
@@ -286,35 +326,13 @@ void MainWindow::showContextMenu(const QPoint &pos)
     }
 }
 
-void MainWindow::clickEnterLogin()
-{
-    on_connectButton_clicked();
-}
-
-void MainWindow::clickEnterRegister()
-{
-    on_submitBut_clicked();
-}
-
-// CellItem mouse click CallBack
+/// CellItem mouse click callBack
 void MainWindow::onCellItemclicked(CellItem *item)
 {
-    if(currentUser->getPermission()==1){
-        view->scene->cellItemSelected  = item;
-        view->resize(view->parentWidget()->size().width()*3/4,view->parentWidget()->size().height());
-        view->setScene(view->sceneProcessing);
-        view->scene->removeItem(view->scene->cellItemSelected);
-        view->sceneProcessing->addItem(view->scene->cellItemSelected->image);
-        view->sceneProcessing->cellItemSelected = view->scene->cellItemSelected;
-        view->fitInView(view->scene->cellItemSelected->image,Qt::KeepAspectRatio);
-        view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-
+    if(currentUser->getPermission() == Users::LEVEL_1){
         QString strPath = item->getImagePath()+ QDir().separator() + item->getImageName()+ "." + item->getImageType();
         confWidget->matOriginal = cv::imread(strPath.toStdString());
         confWidget->matProcessed = cv::imread(strPath.toStdString());
-
 
         confWidget->resize(confWidget->parentWidget()->frameSize().width()*1/4,confWidget->parentWidget()->frameSize().height());
         confWidget->setGeometry(confWidget->parentWidget()->frameSize().width() * 3/4,0,confWidget->size().width(),confWidget->size().height());
@@ -327,10 +345,9 @@ void MainWindow::onCellItemclicked(CellItem *item)
     }
 }
 
-// Resize window event CallBack
+/// Resize window event callBack
 void MainWindow::resizeEvent(QResizeEvent*)
 {
-
     ui->connectionWidget->setGeometry(0,0,ui->centralWidget->width(),ui->centralWidget->height());
     ui->frame->setGeometry(ui->centralWidget->frameGeometry().center().x()-ui->frame->width()/2,
                        ui->centralWidget->frameGeometry().center().y()-ui->frame->height()/2,
@@ -354,13 +371,15 @@ void MainWindow::resizeEvent(QResizeEvent*)
             confWidget->show();
         }
     }
-
+    databaseWidget->resize(ui->centralWidget->frameSize().width(),ui->centralWidget->frameSize().height());
 }
 
-// logout menu action callback
+/// Logout menu action callback
 void MainWindow::logOut()
 {
     currentUser = 0;
+    adminMenu->menuAction()->setVisible(false);
+    view->currentUser = 0;
     view->hide();
     confWidget->hide();
     sortWidget->hide();
@@ -369,7 +388,7 @@ void MainWindow::logOut()
         imageCellChain->deleteCellItemAt(i);
 }
 
-// About menu action callback
+/// About menu action callback
 void MainWindow::about(){
     QMessageBox msgBox;
     msgBox.setWindowTitle("About");
@@ -386,8 +405,9 @@ void MainWindow::about(){
     }
 }
 
-// AboutQt menu action callback
+/// AboutQt menu action callback
 void MainWindow::aboutQt()
 {
     QMessageBox::aboutQt(this, "About Qt");
 }
+

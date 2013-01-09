@@ -1,12 +1,19 @@
 #include "userschain.h"
 
-UsersChain::UsersChain()
+/// Constructor of UserChain
+UsersChain::UsersChain(QObject *parent)
+    :QObject(parent)
 {
     usersCount = 0;
     userRoot = 0;
     userLast = 0;
 }
 
+UsersChain::~UsersChain()
+{
+}
+
+/// Add user to the chained list
 void UsersChain::addUser(Users *user)
 {
     if(usersCount == 0){
@@ -23,6 +30,7 @@ void UsersChain::addUser(Users *user)
     }
 }
 
+/// Add user to the chained list at the position id
 bool UsersChain::addUserAt(Users *user,int id)
 {
     bool ok = false;
@@ -48,6 +56,7 @@ bool UsersChain::addUserAt(Users *user,int id)
     return ok;
 }
 
+/// Delete a user from the chained list
 void UsersChain::deleteUser(Users *user)
 {
 
@@ -83,12 +92,14 @@ void UsersChain::deleteUser(Users *user)
 
 }
 
+/// Delete a user from the chained list which has index id
 void UsersChain::deleteUserAt(int id)
 {
     Users *userTmp = userAt(id);
     this->deleteUser(userTmp);
 }
 
+/// Get the user that has index id from the chained list
 Users *UsersChain::userAt(int id) const
 {
     Users *userTmp = userRoot;
@@ -100,6 +111,7 @@ Users *UsersChain::userAt(int id) const
     return userTmp;
 }
 
+/// Get the user that has username and password from chained list
 Users *UsersChain::getUser(QString username, QString password) const
 {
     Users *userTmp = userRoot;
@@ -119,6 +131,7 @@ Users *UsersChain::getUser(QString username, QString password) const
     return userTmp;
 }
 
+/// Check whether a user with username is present in the chained list
 bool UsersChain::containsUser(QString username) const
 {
     Users *userTmp = userRoot;
@@ -132,4 +145,17 @@ bool UsersChain::containsUser(QString username) const
         }
     }
     return contains;
+}
+
+void UsersChain::update(DataBase *database)
+{
+    for(int i=usersCount-1; i>=0; i--)
+        this->deleteUserAt(i);
+
+    Users *user = 0;
+    int userNumLines = database->getUserNumlines();
+    for(int i=0; i<userNumLines; i++){
+        user = database->getUserDb(i);
+        this->addUser(user);
+    }
 }

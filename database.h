@@ -19,12 +19,14 @@ public:
     void addUserDb(Users *user);
     Users* getUserDb(int id);
     int getUserNumlines() const;
-    bool deleteUserDb(QString username);
+    bool deleteUserDb(const QString username);
+    bool clearUserDb();
 
     void addImageDb(CellItem *cellItem);
     CellItem* getImageDb(int id);
     int getImageNumlines() const;
-    bool deleteImageDb(QString imageName);
+    bool deleteImageDb(const QString imageName);
+    bool clearImageDb();
 
 private:
 

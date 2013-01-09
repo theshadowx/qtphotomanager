@@ -1,5 +1,6 @@
 #include "graphicsview.h"
 
+/// Constructor of GraphicsView
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
 {
@@ -13,6 +14,11 @@ GraphicsView::GraphicsView(QWidget *parent)
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
+GraphicsView::~GraphicsView()
+{
+}
+
+/// Ajust the CellItems in the View
 void GraphicsView::adjustCellItems()
 {
     int itemsCount = scene->imageCellChain->getCount();
@@ -40,22 +46,34 @@ void GraphicsView::adjustCellItems()
         int y = ((i / columnCount) * (imageOffsetHeight + bottomMargin)) + topMargin;
 
         scene->imageCellChain->cellItemAt(i)->setPos(this->mapToScene(x, y));
-
     }
-
 }
 
+/// Mouse double click event callback
 void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if(this->QGraphicsView::scene() == this->scene){
-        if(event->button() == Qt::LeftButton){
-            CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos())));
-            if(item!=NULL){
-                if(scene->imageCellChain->contains(item)){
-                    emit cellItemClicked(item);
-                }else{
-                    CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
-                    emit cellItemClicked(itemParent);
+    if(currentUser->getPermission() == Users::LEVEL_1){
+        if(this->QGraphicsView::scene() == this->scene){
+            if(event->button() == Qt::LeftButton){
+                CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos())));
+                if(item!=NULL){
+                    if(scene->imageCellChain->contains(item)){
+                        scene->cellItemSelected  = item;
+                        emit cellItemClicked(item);
+                    }else{
+                        CellItem *itemParent = static_cast<CellItem*> (item->parentItem());
+                        scene->cellItemSelected  = itemParent;
+                        emit cellItemClicked(itemParent);
+                    }
+
+                    this->resize(this->parentWidget()->size().width()*3/4,this->parentWidget()->size().height());
+                    this->setScene(sceneProcessing);
+                    scene->removeItem(scene->cellItemSelected);
+                    sceneProcessing->addItem(scene->cellItemSelected->image);
+                    sceneProcessing->cellItemSelected = scene->cellItemSelected;
+                    this->fitInView(scene->cellItemSelected->image,Qt::KeepAspectRatio);
+                    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                 }
             }
         }
@@ -63,6 +81,7 @@ void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     QGraphicsView::mouseDoubleClickEvent(event);
 }
 
+/// Mouse press event callback
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
 
@@ -89,6 +108,17 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
     }
     QGraphicsView::mousePressEvent(event);
-
 }
 
+void GraphicsView::updateScene()
+{
+    int itemsCount = scene->imageCellChain->getCount();
+    CellItem *cellItem = 0;
+
+    for(int i=0; i<itemsCount; i++){
+        cellItem = scene->imageCellChain->cellItemAt(i);
+        if(!scene->items().contains(cellItem))
+            scene->addItem(cellItem);
+    }
+    this->adjustCellItems();
+}

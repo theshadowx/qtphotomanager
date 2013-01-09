@@ -15,6 +15,7 @@ class ConfWidget : public QWidget
     Q_OBJECT
 public:
     explicit ConfWidget(QWidget *parent = 0);
+    virtual ~ConfWidget();
 
     QPixmap pixOriginal;
     QPixmap pixProcessed;
@@ -42,8 +43,8 @@ private:
     QGraphicsPixmapItem *histPixmap;
 
 signals:
-    void cancelButton_clicked();
-    void saveButton_clicked();
+    void cancelButtonClicked();
+    void saveButtonClicked();
 
 public slots:
     void on_cancelButton_clicked();

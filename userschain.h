@@ -2,12 +2,14 @@
 #define USERSCHAIN_H
 
 #include "users.h"
+#include "database.h"
 
-
-class UsersChain
+class UsersChain : public QObject
 {
+    Q_OBJECT
 public:
-    UsersChain();
+    UsersChain(QObject *parent=0);
+    virtual ~UsersChain();
 
     void addUser(Users *user);
     bool addUserAt(Users* user,int id);
@@ -24,6 +26,8 @@ private:
     Users *userRoot;
     Users *userLast;
 
+public slots:
+    void update(DataBase *database);
 };
 
 #endif // USERSCHAIN_H

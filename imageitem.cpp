@@ -1,11 +1,13 @@
 #include "imageitem.h"
 
+/// Constructor of ImageItem
 ImageItem::ImageItem(QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
 {
     setAcceptedMouseButtons(0);
 }
 
+/// Constructor of ImageItem
 ImageItem::ImageItem(const QPixmap &pixmap, QGraphicsItem *parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
@@ -13,6 +15,11 @@ ImageItem::ImageItem(const QPixmap &pixmap, QGraphicsItem *parent)
     adjust();
 }
 
+ImageItem::~ImageItem()
+{
+}
+
+/// Adjust an ImageItem in a frame
 void ImageItem::adjust()
 {
     QMatrix matrix;
@@ -20,7 +27,7 @@ void ImageItem::adjust()
     setMatrix(matrix);
 }
 
-
+/// Ajust an ImageItem in a frame
 void ImageItem::adjust(int sx, int sy)
 {
     QMatrix matrix;

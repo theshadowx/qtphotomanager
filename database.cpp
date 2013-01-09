@@ -1,14 +1,17 @@
 #include "database.h"
 
+/// Constructor of Database
 DataBase::DataBase():QSqlDatabase()
 {
-    userNumLines = 0;
-    imageNumLines = 0;
 #ifdef Q_OS_LINUX
     homePath = QDir(QDir::homePath() + "/.photoManager");
 #else
     homePath = QDir(QDir::homePath() + "/photoManager");
 #endif
+
+    userNumLines = 0;
+    imageNumLines = 0;
+
     if(!homePath.exists())
         QDir().mkdir(homePath.path());
     QDir().setCurrent(homePath.absolutePath());
@@ -34,11 +37,12 @@ DataBase::DataBase():QSqlDatabase()
     }
 }
 
-DataBase::~DataBase(){}
-
+/// Destructor of database
+DataBase::~DataBase()
+{
+}
 
 /// User DataBase Functions ///
-
 void DataBase::addUserDb(Users* user)
 {
     QTextStream outStream(&userDbFile);
@@ -46,6 +50,11 @@ void DataBase::addUserDb(Users* user)
     userNumLines++;
 }
 
+/// ******************************************************************** ///
+///                     User DataBase Functions
+/// ******************************************************************** ///
+
+/// Get the user that has index id
 Users* DataBase::getUserDb(int id)
 {
     Q_ASSERT(id < userNumLines);
@@ -67,12 +76,14 @@ Users* DataBase::getUserDb(int id)
     return user;
 }
 
+/// Get number of users present in database
 int DataBase::getUserNumlines() const
 {
     return userNumLines;
 }
 
-bool DataBase::deleteUserDb(QString username)
+/// Delete a user from database
+bool DataBase::deleteUserDb(const QString username)
 {
     QTextStream inStream(&userDbFile);
     QStringList line;
@@ -117,8 +128,22 @@ bool DataBase::deleteUserDb(QString username)
     return userExist;
 }
 
-/// Image DataBase Functions ///
+/// Clear all user database
+bool DataBase::clearUserDb()
+{
+    userNumLines = 0;
+    userDbFile.close();
+    userDbFile.remove();
+    userDbFile.setFileName("usersDb.txt");
+    return userDbFile.open(QFile::Append | QFile::ReadWrite);
 
+}
+
+/// ******************************************************************** ///
+///                     Image DataBase Functions
+/// ******************************************************************** ///
+
+/// add image to image database
 void DataBase::addImageDb(CellItem* cellItem)
 {
     QTextStream outStream(&imageDbFile);
@@ -132,6 +157,7 @@ void DataBase::addImageDb(CellItem* cellItem)
     imageNumLines++;
 }
 
+/// get image from database that has index id
 CellItem* DataBase::getImageDb(int id)
 {
     Q_ASSERT(id < imageNumLines);
@@ -157,12 +183,14 @@ CellItem* DataBase::getImageDb(int id)
     return cellItem;
 }
 
+/// Get the number of images in database
 int DataBase::getImageNumlines() const
 {
     return imageNumLines;
 }
 
-bool DataBase::deleteImageDb(QString imageName)
+/// Delete image from database
+bool DataBase::deleteImageDb(const QString imageName)
 {
     QTextStream inStream(&imageDbFile);
     QStringList line;
@@ -206,4 +234,14 @@ bool DataBase::deleteImageDb(QString imageName)
     }
 
     return imageExist;
+}
+
+/// Clear all image database
+bool DataBase::clearImageDb()
+{
+    imageNumLines = 0;
+    imageDbFile.close();
+    imageDbFile.remove();
+    imageDbFile.setFileName("imagesDb.txt");
+    return imageDbFile.open(QFile::Append | QFile::ReadWrite);
 }

@@ -31,3 +31,7 @@ SortWidget{
 ConfWidget{
         background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
 }
+
+DatabaseWidget{
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
+}
