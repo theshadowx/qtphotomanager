@@ -1,0 +1,4 @@
+qtphotomanager
+==============
+
+Qt Photo Manager
