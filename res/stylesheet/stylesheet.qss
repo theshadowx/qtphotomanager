@@ -1,0 +1,54 @@
+QPushButton{
+    color: black;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681  #3093c7, stop:1 #1c5a85);
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    padding: 3px;
+    font-size: 12px;
+    font-weight:bold;
+    min-height:23px;
+    max-height:23px;
+    min-width:119px;
+    max-width:119px;
+    border-radius:11px;
+ }
+QPushButton:hover{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681  #26759e, stop:1  #133d5b);
+ }
+
+#usrCnEdit #userNameEdit #passwordEdit #pwCnEdit #pwCfCnEdit{
+    min-height:23px;
+    max-height:23px;
+    min-width:119px;
+    max-width:119px;
+    border-width: 2px;
+    border-color: red;
+}
+
+#connectionWidget{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
+}
+
+SortWidget{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
+}
+
+ConfWidget{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
+}
+
+DatabaseWidget{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.00436681 rgba(176, 189, 201, 255), stop:0.995652 rgba(81, 108, 121, 255))
+}
+
+#histView, #viewPieChart{
+    background-color: transparent
+}
+
+
+
+
+
+
+
