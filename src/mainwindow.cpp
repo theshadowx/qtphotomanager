@@ -303,7 +303,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QAction previewImageAction("Preview",&optionMenu);
 
     if(currentUser->getPermission() == Users::LEVEL_1){
-        CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+        CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos),  QTransform()));
         if(view->QGraphicsView::scene() == view->scene){
             if(item!=NULL){
                 optionMenu.addAction(&previewImageAction);
@@ -342,7 +342,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                     }
                 }
             }else if(selectedAction == &deleteImageAction){
-                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+                CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos), QTransform()));
                 if(item!=NULL){
                     if(view->imageCellChain->contains(item)){
                         database->deleteImageDb(item->getImageName());
@@ -402,7 +402,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                 }
             }else if(selectedAction == &imagePropAction){
                 CellItem *cellItem = 0;
-                QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos));
+                QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos), QTransform());
 
                 if(view->imageCellChain->contains(static_cast<CellItem*> (item))){
                     cellItem = static_cast<CellItem*> (item);
@@ -414,11 +414,11 @@ void MainWindow::showContextMenu(const QPoint &pos)
             }
         }
     }else if(currentUser->getPermission() == Users::LEVEL_2){
-        CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos)));
+        CellItem *item = static_cast<CellItem*> (view->scene->itemAt(view->mapToScene(pos), QTransform()));
         if(view->QGraphicsView::scene() == view->scene){
             if(item!=NULL){
                 CellItem *cellItem = 0;
-                QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos));
+                QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos), QTransform());
                 optionMenu.addAction(&previewImageAction);
                 optionMenu.addAction(&imagePropAction);
                 QAction* selectedAction = optionMenu.exec(globalPos);
@@ -440,7 +440,7 @@ void MainWindow::showContextMenu(const QPoint &pos)
                     previewWidget->showImage(cellItem);
                 }else if(selectedAction == &imagePropAction){
                     CellItem *cellItem = 0;
-                    QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos));
+                    QGraphicsItem *item = view->scene->itemAt(view->mapToScene(pos), QTransform());
 
                     if(view->imageCellChain->contains(static_cast<CellItem*> (item))){
                         cellItem = static_cast<CellItem*> (item);

@@ -1,3 +1,9 @@
+QT += core gui widgets
+
+TARGET    = QtPhotoManager
+TEMPLATE  = app
+CONFIG   += c++11
+
 SOURCES += \
     src/userschain.cpp \
     src/users.cpp \
@@ -55,28 +61,22 @@ RESOURCES += \
 INCLUDEPATH +=./include
 
 
-OpenCv = /home/theshadowx/workspace/Project_QT/openCV/OpenCv/Release
+OpenCv = 3rdParty/OpenCV
 
 unix{
     INCLUDEPATH +=$$OpenCv/include/
-    LIBS += -L$$OpenCv/lib
-    LIBS += $$OpenCv/lib/libopencv_core.so.2.4
-    LIBS += $$OpenCv/lib/libopencv_imgproc.so.2.4
-    LIBS += $$OpenCv/lib/libopencv_highgui.so.2.4
+    LIBS += -L$$_PRO_FILE_PWD_/3rdParty/OpenCV/lib    \
+            -lopencv_core     \
+            -lopencv_imgproc  \
+            -lopencv_highgui
 
     ParentDirectory = ../PhotoManager_build
 
-    RCC_DIR = "$$ParentDirectory/Build/RCCFiles"
-    UI_DIR = "$$ParentDirectory/Build/UICFiles"
-    MOC_DIR = "$$ParentDirectory/Build/MOCFiles"
-    OBJECTS_DIR = "$$ParentDirectory/Build/ObjFiles"
-
-
     CONFIG(debug, debug|release) {
-        DESTDIR = "$$ParentDirectory/debug"
+        DESTDIR = "build/bin/debug"
     }
     CONFIG(release, debug|release) {
-        DESTDIR = "$$ParentDirectory/release"
+        DESTDIR = "build/bin/release"
     }
 }
 
@@ -84,9 +84,9 @@ win32{
 
     INCLUDEPATH += $$OpenCv/include
     LIBS += -L $$OpenCv/bin \
-            -llibopencv_core243 \
-            -llibopencv_imgproc243 \
-            -llibopencv_highgui243
+            -lopencv_core243 \
+            -lopencv_imgproc243 \
+            -lopencv_highgui243
 
     ParentDirectory = ../PhotoManager_build
 

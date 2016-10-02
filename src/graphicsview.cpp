@@ -168,7 +168,7 @@ void GraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton){
         if(currentUser->getPermission() == Users::LEVEL_1){
             if(this->QGraphicsView::scene() == this->scene){
-                CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos())));
+                CellItem *item = static_cast<CellItem*> (this->scene->itemAt(this->mapToScene(event->pos()), QTransform()));
                 if(item!=NULL){
                     if(imageCellChain->contains(item)){
                         this->setupProcessingMode(item);
@@ -189,7 +189,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     if(!this->isHidden()){
         if(this->QGraphicsView::scene() == scene){
             if(event->button() == Qt::LeftButton){
-                CellItem *clickedItem = static_cast<CellItem*> (scene->itemAt(this->mapToScene(event->pos())));
+                CellItem *clickedItem = static_cast<CellItem*> (scene->itemAt(this->mapToScene(event->pos()), QTransform()));
                 if(clickedItem!=NULL){
                     /// Item was clicked
                     if(!ctrlClicked){

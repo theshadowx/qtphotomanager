@@ -5,7 +5,7 @@
  * @date February 2012
  */
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
