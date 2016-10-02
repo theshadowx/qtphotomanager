@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication::setDesktopSettingsAware(false);
     QApplication a(argc, argv);
     a.setWindowIcon(QIcon(":/icon/qt-logo.png"));
 
